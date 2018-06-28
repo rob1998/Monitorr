@@ -1,8 +1,3 @@
-var servertime
-var servertimezone;
-
-date = servertime;
-
 // inner variables:
 
 var canvas, ctx;
@@ -17,7 +12,7 @@ function clear() { // clear canvas function
 
 // Parse time from index.php:
 
-var date = new Date(servertime);
+var date = new Date(serverTime);
 
 function drawScene() { // main drawScene function
     clear(); // clear canvas

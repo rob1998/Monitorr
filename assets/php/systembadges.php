@@ -3,23 +3,27 @@
 <!-- <link rel="stylesheet" href="../css/main.css"> -->
 
 <div id="cpu" class="col-md-2 col-centered double-val-label">
-  <span class="<?php echo $cpuClass; ?>">CPU</span>
-  <span><?php echo $cpuPercent; ?>%</span>
+  <span class="<?php echo getCPUClass(getServerLoad());; ?>">CPU</span>
+  <span><?php echo getServerLoad(); ?>%</span>
 </div>
 
 <div id="ram" class="col-md-2 col-centered double-val-label">
-  <span class="<?php echo $ramClass; ?>">RAM</span>
-  <span><?php echo $ramPercent; ?>%</span>
+  <span class="<?php echo getRamClass(getRamPercentage()); ?>">RAM</span>
+  <span><?php echo getRamPercentage(); ?>%</span>
 </div>
 
 <div id="uptime" class="col-md-2 col-centered double-val-label">
   <span class="primary">uptime</span>
-  <span><?php echo $total_uptime ;?></span>
+  <span><?php echo getTotalUptime() ;?></span>
 </div>
 
 <div id="ping" class="col-md-2 col-centered double-val-label">
-  <span class="<?php echo $pingclass; ?>">ping</span>
-  <span><?php echo $pingTime ;?> ms</span>
+    <?php
+        $ping = ping($settings['pinghost'] . ":" . $settings['pingport']);
+        if(!$ping) $ping = "?";
+    ?>
+  <span class="<?php echo getPingClass($ping); ?>">ping</span>
+  <span><?php echo $ping;?> ms</span>
 </div>
 
 <div id="hd" class="col-md-2 col-centered double-val-label">

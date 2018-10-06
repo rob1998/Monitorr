@@ -1,527 +1,256 @@
+<?php
+include('assets/php/functions.php');
+include('assets/php/auth_check.php');
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
-    <!--
-         Monitorr | Settings page
-    https://github.com/Monitorr/Monitorr
-    -->
+<!--
+     Monitorr | settings page
+https://github.com/Monitorr/Monitorr
+-->
 
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <link rel="manifest" href="webmanifest.json">
-        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
-        <link rel="apple-touch-icon" href="favicon.ico">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="manifest" href="webmanifest.json">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
+    <link rel="apple-touch-icon" href="favicon.ico">
 
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Monitorr">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Monitorr">
 
-        <link type="text/css" href="assets/css/bootstrap.min.css" rel="stylesheet" />
-        <link type="text/css" href="assets/css/main.css" rel="stylesheet">
-        <link type="text/css" href="assets/data/css/custom.css" rel="stylesheet">
+    <link type="text/css" href="assets/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+    <link type="text/css" href="assets/css/monitorr.css" rel="stylesheet">
+    <link type="text/css" href="assets/data/custom.css" rel="stylesheet">
 
-        <meta name="theme-color" content="#464646" />
-        <meta name="theme_color" content="#464646" />
+    <meta name="theme-color" content="#464646"/>
+    <meta name="theme_color" content="#464646"/>
 
-        <script type="text/javascript" src="assets/js/jquery.min.js"></script>
-        <script type="text/javascript" src="assets/js/pace.js" async></script>
-        <!-- <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script> -->
+    <script type="text/javascript" src="assets/js/jquery.min.js"></script>
+    <script type="text/javascript" src="assets/js/pace.js" async></script>
+    <script src="assets/js/monitorr.main.js"></script>
+    <!-- <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script> -->
 
-        <style>
 
-            body {
-                margin: auto;
-                padding-left: 2rem;
-                padding-right: 1rem;
-                padding-bottom: 1rem;
-                /* overflow-y: scroll !important;  */
-                overflow-x: hidden !important;
-                background-color: #1F1F1F;
+    <!-- sync config with javascript -->
+    <script>
+        let settings = <?php echo json_encode($GLOBALS['settings']);?>;
+        let preferences = <?php echo json_encode($GLOBALS['preferences']);?>;
+        refreshConfig(false);
+    </script>
+
+	<?php
+	if ($GLOBALS['preferences']['timezone'] == "") {
+
+		date_default_timezone_set('UTC');
+		$timezone = date_default_timezone_get();
+
+	} else {
+
+		$timezoneconfig = $GLOBALS['preferences']['timezone'];
+		date_default_timezone_set($timezoneconfig);
+		$timezone = date_default_timezone_get();
+
+	}
+	?>
+
+    <script>
+		<?php
+		//initial values for clock:
+		//$timezone = $preferences['timezone'];
+		$dt = new DateTime("now", new DateTimeZone("$timezone"));
+		$timeStandard = (int)($GLOBALS['preferences']['timestandard']);
+		$rftime = $GLOBALS['settings']['rftime'];
+		$timezone_suffix = '';
+		if (!$timeStandard) {
+			$dateTime = new DateTime();
+			$dateTime->setTimeZone(new DateTimeZone($timezone));
+			$timezone_suffix = $dateTime->format('T');
+		}
+		$serverTime = $dt->format("D d M Y H:i:s");
+		?>
+        let servertime = "<?php echo $serverTime;?>";
+        let timeStandard = <?php echo $timeStandard;?>;
+        let timeZone = "<?php echo $timezone_suffix;?>";
+        let rftime = <?php echo $settings['rftime'];?>;
+
+        $(document).ready(function () {
+            setTimeout(syncServerTime(), settings.rftime); //delay is rftime
+            updateTime();
+        });
+    </script>
+
+    <title>
+		<?php
+		echo $preferences['sitetitle'];
+		?>
+        | Settings
+    </title>
+
+    <script>
+        $(function () {
+            switch (window.location.hash) {
+                case "#user-preferences":
+                    load_preferences();
+                    break;
+                case "#monitorr-settings":
+                    load_settings();
+                    break;
+                case "#monitorr-authentication":
+                    load_authentication();
+                    break;
+                case "#services-configuration":
+                    load_services();
+                    break;
+                case "#registration":
+                    load_registration();
+                    break;
+                default:
+                    load_info();
             }
-
-            .navbar-brand {
-                font-size: 2rem !important;
-                font-weight: 500;
-            }
-
-            #summary {
-                position: relative !important;
-                margin: auto;
-                margin-top: 0rem !important;
-                margin-bottom: 1rem;
-                width: 16.5rem !important;
-                font-size: .8rem;
-                line-height: 1.5rem;
-                border-radius: .2rem;
-                box-shadow: 3px 3px 3px black !important;
-            }
-
-            legend {
-                color: white;
-            }
-
-            body::-webkit-scrollbar {
-                width: .75rem;
-                background-color: #252525;
-            }
-
-            body::-webkit-scrollbar-track {
-                -webkit-box-shadow: inset 0 0 .25rem rgba(0, 0, 0, 0.3);
-                box-shadow: inset 0 0 .25rem rgba(0, 0, 0, 0.3);
-                border-radius: .75rem;
-                background-color: #252525;
-            }
-
-            body::-webkit-scrollbar-thumb {
-                border-radius: .75rem;
-                -webkit-box-shadow: inset 0 0 .25rem rgba(0, 0, 0, .3);
-                box-shadow: inset 0 0 .25rem rgba(0, 0, 0, .3);
-                background-color: #8E8B8B;
-            }
-
-            body.offline #link-bar {
-                display: none;
-            }
-
-            body.online #link-bar {
-                display: block;
-            }
-
-            .auto-style1 {
-                text-align: center;
-            }
-
-            #left {
-                padding-bottom: 1.5rem !important;
-            }
-
-            #footer {
-                position: fixed !important;
-                bottom: 0 !important;
-            }
-
-            a:link {
-                background-color: transparent !important;
-            }
-
-        </style>
-
-        <?php
-
-            $datafile = 'assets/data/datadir.json';
-            $str = file_get_contents($datafile);
-            $json = json_decode( $str, true);
-            $datadir = $json['datadir'];
-            $jsonfileuserdata = $datadir . 'user_preferences-data.json';
-
-            if(!is_file($jsonfileuserdata)){
-
-                $path = "assets/";
-
-                include_once ('assets/config/monitorr-data-default.php');
-
-                $title = $jsonusers['sitetitle'];
-
-                $rftime = $jsonsite['rftime'];
-
-                $timezone = $jsonusers['timezone'];
-            }
-
-            else {
-
-                $datafile = 'assets/data/datadir.json';
-
-                include_once ('assets/config/monitorr-data.php');
-
-                $title = $jsonusers['sitetitle'];
-
-                $rftime = $jsonsite['rftime'];
-            }
-        ?>
-
-        <?php
-
-            $datafile = $datadir . 'users.db';
-
-            $db_sqlite_path = $datafile;
-
-        ?>
-
-        <title>
-            <?php
-                echo $title . PHP_EOL;
-            ?>
-            | Settings
-        </title>
-
-             <!-- Clock functions: -->
-        <script>
-
-	        <?php
-                //initial values for clock:
-                $timezone = $jsonusers['timezone'];
-                $dt = new DateTime("now", new DateTimeZone("$timezone"));
-                $timeStandard = (int)($jsonusers['timestandard'] === "True" ? true : false);
-                $timezone_suffix = '';
-                if (!$timeStandard) {
-                    $dateTime = new DateTime();
-                    $dateTime->setTimeZone(new DateTimeZone($timezone));
-                    $timezone_suffix = $dateTime->format('T');
-                }
-                $serverTime = $dt->format("D d M Y H:i:s");
-	        ?>
-
-            var nIntervId3;
-            var onload;
-
-            var serverTime = "<?php echo $serverTime;?>";
-            var timestandard = <?php echo $timeStandard;?>;
-            var timeZone = "<?php echo $timezone_suffix;?>";
-            var rftime = <?php echo $jsonsite['rftime'];?>;
-
-            function updateTime() {
-                setInterval(function() {
-                    var timeString = date.toLocaleString('en-US', {hour12: timestandard, weekday: 'short', year: 'numeric', day: '2-digit', month: 'short', hour:'2-digit', minute:'2-digit', second:'2-digit'}).toString();
-                    var res = timeString.split(",");
-                    var time = res[3];
-                    var dateString = res[0]+' | '+res[1].split(" ")[2]+" "+res[1].split(" ")[1]+'<br>'+res[2];
-                    var data = '<div class="dtg">' + time + ' ' + timeZone + '</div>';
-                    data+= '<div id="line">__________</div>';
-                    data+= '<div class="date">' + dateString + '</div>';
-                    $("#timer").html(data);
-                }, 1000);
-            }
-
-                // update UI clock with server time:
-
-            function syncServerTime() {
-                console.log('Monitorr time update START | Interval: '+ rftime +' ms');
-                $.ajax({
-                    url: "assets/php/timestamp.php",
-                    type: "GET",
-                    timeout: 4000,
-                    success: function (response) {
-                        var response = $.parseJSON(response);
-                        serverTime = response.serverTime;
-                        timestandard = parseInt(response.timestandard);
-                        timeZone = response.timezoneSuffix;
-                        rftime = parseInt(response.rftime);
-                        date = new Date(serverTime);
-                        //setTimeout(function() {syncServerTime()}, rftime); //delay is rftime
-                    },
-                    error: function(x, t, m) {
-                        if(t==="timeout") {
-                            console.log("ERROR: timestamp timeout");
-                            $('#ajaxtimestamp').html('<i class="fa fa-fw fa-exclamation-triangle"></i>');
-                        } else {
-                        }
-                    }
-                });
-            }
-
-            $(document).ready(function() {
-                syncServerTime(); 
-                updateTime();
-
-                    // sync UI clock with server time:
-                function update() {
-
-                    rftime =
-                        <?php
-                            $rftime = $jsonsite['rftime'];
-                            echo $rftime;
-                        ?>
-
-                    nIntervId3 = setInterval(syncServerTime, rftime); //delay is rftime
-                }
-                update();
-            });
-
-        </script>
-
-        <script src="assets/js/clock.js" async></script>
-        
-            <!-- marquee offline function: -->
-        <script>
-
-            var nIntervId2;
-            var onload;
-            var current = -1;
-
-            function updateSummary() {
-
-                 console.log('Service offline check START');
-
-                rfsysinfo =
-                    <?php
-                        $rfsysinfo = $jsonsite['rfsysinfo'];
-                        echo $rfsysinfo;
-                    ?>
-
-                $.ajax({
-                    type: 'POST',
-                    url: 'assets/php/marquee.php',
-                    data: {
-                        current: current
-                    },
-
-                    timeout: 4000,
-                    success: function(data) {
-                        if(data){
-                            result = $.parseJSON(data);
-                            console.log(result);
-                            $("#summary").fadeOut(function() {
-                                $(this).html(result[0]).fadeIn();
-                            });
-                            current = result[1];
-                        }
-
-                        else {
-                            current = -1;
-                            $("#summary").hide();
-                        }
-                        //window.setTimeout(updateSummary, 5000);
-                        window.setTimeout(updateSummary, rfsysinfo);
-                    },
-                    error: function(x, t, m) {
-                        if(t==="timeout") {
-                            //alert("ERROR: marquee timeout");
-                            console.log("ERROR: marquee timeout");
-                            $('#ajaxmarquee').html('<i class="fa fa-fw fa-exclamation-triangle"></i>');
-                        } else {
-                        }
-                    }
-                });
-            }
-
-        </script>
-
-            <!-- Load monitorr-info frame on settings page onload: -->
-        <script>
-            $(function() {
-                document.getElementById("includedContent").innerHTML='<object type="text/html" class="object" data="assets/php/monitorr-info.php" ></object>';
-            });
-        </script>
-
-        <script>
-
-            var nIntervId2;
-            var onload;
-            var current = -1;
-            
-            function updateSummaryManual() {
-
-                console.log('Service offline check START');
-
-                $.ajax({
-                    type: 'POST',
-                    url: 'assets/php/marquee.php',
-                    data: {
-                        current: current
-                    },
-
-                    timeout: 4000,
-                    success: function(data) {
-                        if(data){
-                            result = $.parseJSON(data);
-                            console.log(result);
-                            $("#summary").fadeOut(function() {
-                                $(this).html(result[0]).fadeIn();
-                            });
-                            current = result[1];
-                        }
-
-                        else {
-                            current = -1;
-                            $("#summary").hide();
-                        }
-                    },
-                    error: function(x, t, m) {
-                        if(t==="timeout") {
-                            //alert("ERROR: marquee timeout");
-                            console.log("ERROR: marquee timeout");
-                            $('#ajaxmarquee').html('<i class="fa fa-fw fa-exclamation-triangle"></i>');
-                        } else {
-                        }
-                    }
-                });
-            }
-
-        </script>
-
-        <script>
-
-            $(document).ready(function() {
-                updateSummary();
-            });
-
-        </script>
-
-    </head>
-
-    <body>
-
-            <!-- Fade-in effect: -->
-        <script>
-            document.body.className += ' fade-out';
-            $(function() {
-                $('body').removeClass('fade-out'); 
-            });
-        </script>
-
-            <!-- Ajax timeout indicator: -->
-        <div id="ajaxtimeout">
-
-            <div id="ajaxtimestamp" title="Analog clock timeout. Refresh page."></div>
-            <div id="ajaxmarquee" title="Offline marquee timeout. Refresh page."></div>
+        });
+    </script>
+
+    <script src="assets/js/clock.js" async></script>
+    <script src="assets/data/custom.js"></script>
+</head>
+
+<body>
+
+<script>
+    document.body.className += ' fade-out';
+    $(function () {
+        $('body').removeClass('fade-out');
+    });
+</script>
+
+<div id="settingscolumn" class="settingscolumn">
+
+    <div id="logoHeaderSettings">
+        <img src="assets/images/logo_white_glow_crop.png" alt="Monitorr" title="Reload Monitorr" onclick="window.location.reload(true);">
+    </div>
+
+    <div id="settingsbrand">
+        <div class="navbar-brand">
+			<?php
+			echo $preferences['sitetitle'];
+			?>
+        </div>
+    </div>
+
+    <div id="summary"></div>
+
+    <div class="Column left">
+        <div id="clock">
+            <canvas id="canvas" width="120" height="120"></canvas>
+            <div class="dtg" id="timer"></div>
+        </div>
+    </div>
+
+    <div id="wrapper" class="left">
+
+        <!-- Sidebar -->
+        <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+
+            <div class="settingstitle">
+                Settings
+            </div>
+
+            <ul class="nav sidebar-nav">
+
+                <li class="sidebar-nav-item" data-item="info">
+                    <a href="#info" onclick="load_info()"><i class="fa fa-fw fa-info"></i>Info</a>
+                </li>
+                <li class="sidebar-nav-item" data-item="user-preferences">
+                    <a href="#user-preferences" onclick="load_preferences()"><i class="fa fa-fw fa-user"></i>User Preferences</a>
+                </li>
+                <li class="sidebar-nav-item" data-item="monitorr-settings">
+                    <a href="#monitorr-settings" onclick="load_settings()"><i class="fa fa-fw fa-cog"></i>Monitorr Settings</a>
+                </li>
+                <li class="sidebar-nav-item" data-item="monitorr-authentication">
+                    <a href="#monitorr-authentication" onclick="load_authentication()"><i class="fa fa-fw fa-lock"></i>Authentication</a>
+                </li>
+                <li class="sidebar-nav-item" data-item="services-configuration">
+                    <a href="#services-configuration" onclick="load_services()"><i class="fa fa-fw fa-book"></i>Log Configuration</a>
+                </li>
+                <li class="sidebar-nav-item" data-item="registration">
+                    <a href="#registration" onclick="load_registration()"><i class="fas fa-user-plus"></i>Registration</a>
+                </li>
+				<?php if (isset($_SESSION['user_name']) && isset($_SESSION['user_is_logged_in']) && !empty($_SESSION['user_name']) && ($_SESSION['user_is_logged_in'])) { ?>
+                    <li class="sidebar-nav-item" data-item="log-out">
+                        <a href="settings.php?action=logout"><i class="fas fa-sign-out-alt"></i>Log Out</a>
+                    </li>
+				<?php } ?>
+                <li class="sidebar-nav-item" data-item="monitorr">
+                    <a href="index.php"><i class="fa fa-fw fa-home"></i>Monitorr</a>
+                </li>
+
+            </ul>
+
+        </nav>
+
+    </div>
+
+    <div id="version">
+
+        <script src="assets/js/update.js" async></script>
+
+        <p><a class="footer a" href="https://github.com/monitorr/Monitorr" target="_blank" title="Monitorr Repo">
+                Monitorr </a> | <a class="footer a" href="https://github.com/Monitorr/monitorr/releases" target="_blank"
+                                 title="Monitorr Releases"> <?php echo file_get_contents("assets/js/version/version.txt"); ?> </a>
+        </p>
+
+        <div id="version_check_auto"></div>
+
+        <div id="reginfo">
+
+			<?php
+
+			if (!configExists()) {
+				echo "Config file NOT present";
+			} else {
+				echo 'Config file present';
+			}
+
+			?>
 
         </div>
 
-        <div id ="settingscolumn" class="settingscolumn">
+    </div>
 
-            <div id="settingsbrand">
-                <div class="navbar-brand">
-                    <?php
-                        echo $title . PHP_EOL;
-                    ?>
-                </div>
-            </div>
+</div>
+<div class="settings-title">
+    <div id="setttings-page-title" class="navbar-brand">
+    </div>
+</div>
+<div id="includedContent">
 
-                <!-- Append marquee alert if service is down: -->
-            <div id="summary"></div>
+    <script>
+    </script>
 
-            <div id="left" class="Column">
-                <div id="clock">
-                    <canvas id="canvas" width="120" height="120"></canvas>
-                    <!-- <div class="dtg" id="timer"></div> -->
-                    <div id="timer"></div>
-                </div>
-            </div>
+</div>
 
-            <div id="wrapper">
+<div id="footer" class="settings-footer">
 
-                <!-- Sidebar -->
-                <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+    <!-- Checks for Monitorr application update on page load & "Check for update" click: -->
+    <script src="assets/js/update.js" async></script>
 
-                    <div class="settingstitle">
-                        Settings
-                    </div>
+    <div id="monitorrid">
+        <a href="https://github.com/monitorr/monitorr" title="Monitorr GitHub repo" target="_blank"
+           class="footer">Monitorr </a> |
+        <a href="https://github.com/Monitorr/monitorr/releases" title="Monitorr releases" target="_blank" class="footer">
+            Version: <?php echo file_get_contents("assets/js/version/version.txt"); ?></a> |
+        <a href="settings.php" title="Monitorr Settings" target="_blank" class="footer">Settings</a>
+		<?php if (isset($_SESSION['user_name']) && isset($_SESSION['user_is_logged_in']) && !empty($_SESSION['user_name']) && ($_SESSION['user_is_logged_in'])) {
+			echo " | <a href='index.php?action=logout' title='Log out' class='footer'></i>Logout</a>";
+		} ?>
+        <br>
+    </div>
 
-                    <ul class="nav sidebar-nav">
-
-                        <li>
-                            <a href ="#info" onclick="load_info()"><i class="fa fa-fw fa-info"></i> Info </a>
-                        </li>
-                        <li>
-                            <a href ="#user-preferences" onclick="load_preferences()"><i class="fa fa-fw fa-cog"></i>  User Preferences </a>
-                        </li>
-                        <li>
-                            <a href ="#monitorr-settings" onclick="load_settings()"><i class="fa fa-fw fa-cog"></i>  Monitorr Settings </a>
-                        </li>
-                        <li>
-                            <a href ="#services-configuration" onclick="load_services()"><i class="fa fa-fw fa-cog"></i> Services Configuration  </a>
-                        </li>
-                        <li>
-                            <a href="assets/php/monitorr-info.php?action=logout"><i class="fa fa-fw fa-sign-out"></i> Log-out </a>
-                        </li>
-                        <li>
-                            <a href="index.php"><i class="fa fa-fw fa-home"></i> Monitorr </a>
-                        </li>
-
-                    </ul>
-
-                </nav>
-
-            </div>
-
-            <div id="version" >
-
-                <script src="assets/js/update_auto.js" async></script>
-
-                <p> <a class="footer a" href="https://github.com/monitorr/Monitorr" target="_blank" title="Monitorr Repo"> Monitorr </a> | <a class="footer a" href="https://github.com/Monitorr/Monitorr/releases" target="_blank" title="Monitorr Releases"> <?php echo file_get_contents( "assets/js/version/version.txt" );?> </a> </p>
-
-                <div id="version_check_auto"></div>
-
-                <div id="reginfo" >
-
-                    <?php
-
-                        if (!is_dir($datadir)) {
-                            echo "Data directory NOT present.";
-                        }
-
-                        else {
-                            echo 'Data directory present:';
-                                echo "<br>";
-                            echo $datadir;
-                        }
-
-                            echo "<br>";
-
-                        if (!is_file($datafile)) {
-                            echo "Database file NOT present.";
-                            echo "<br><br>";
-                        }
-
-                        else {
-                            echo 'Database file present:';
-                                echo "<br>";
-                            echo $datafile;
-                                echo "<br><br>";
-                        }
-
-                    ?>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div id ="includedContent">
-
-            <script>
-                function load_info() {
-                    document.getElementById("includedContent").innerHTML='<object  type="text/html" class="object" data="assets/php/monitorr-info.php" ></object>';
-                    updateSummaryManual();
-                }
-            </script>
-
-            <script>
-                function load_preferences() {
-                    document.getElementById("includedContent").innerHTML='<object type="text/html" class="object" data="assets/php/monitorr-user_preferences.php" ></object>';
-                    updateSummaryManual();
-                }
-            </script>
-
-            <script>
-                function load_settings() {
-                    document.getElementById("includedContent").innerHTML='<object type="text/html" class="object" data="assets/php/monitorr-site_settings.php" ></object>';
-                    updateSummaryManual();
-                }
-            </script>
-
-            <script>
-                function load_services() {
-                    document.getElementById("includedContent").innerHTML='<object type="text/html" class="object" data="assets/php/monitorr-services_settings.php" ></object>';
-                    updateSummaryManual();
-                }
-            </script>
-
-        </div>
-
-            <!-- Fire loop.php once on page load to get services status: -->
-        <script>
-
-            $(function() {
-                console.log('Service check START');
-                $("#serviceshidden").load('assets/php/loopsettings.php');
-            });
-
-        </script>
-
-        <div id="serviceshidden"></div>
-
-    </body>
+</div>
+</body>
 
 </html>

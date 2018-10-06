@@ -167,7 +167,7 @@
 
                     echo '<div class="col-lg-4">';
 
-                        if($v2['ping'] == "Enabled") {
+                        if($v2['ping.class'] == "Enabled") {
 
                             $pingTime = pingstat(url_to_domain($url));
 
@@ -216,7 +216,7 @@
                     echo '<div class="col-lg-4">';
 
 
-                        if($v2['ping'] == "Enabled") {
+                        if($v2['ping.class'] == "Enabled") {
 
                             $pingTime = pingstat(url_to_domain($url));
 
@@ -326,7 +326,7 @@
 
                             echo '<div class="col-lg-4">';
 
-                                if($v2['ping'] == "Enabled") {
+                                if($v2['ping.class'] == "Enabled") {
 
                                     $pingTime = pingstat(url_to_domain($url));
 
@@ -373,7 +373,7 @@
 
                             echo '<div class="col-lg-4">';
                                 
-                                if($v2['ping'] == "Enabled") {
+                                if($v2['ping.class'] == "Enabled") {
 
                                     $pingTime = pingstat(url_to_domain($url));
 
@@ -544,7 +544,7 @@
 
                     echo '<div class="col-lg-4">';
 
-                        if($v2['ping'] == "Enabled") {
+                        if($v2['ping.class'] == "Enabled") {
 
                             $pingTime = pingstat(url_to_domain($url));
 
@@ -593,7 +593,7 @@
                     
                     echo '<div class="col-lg-4">';
 
-                        if($v2['ping'] == "Enabled") {
+                        if($v2['ping.class'] == "Enabled") {
 
                             $pingTime = pingstat(url_to_domain($url));
 

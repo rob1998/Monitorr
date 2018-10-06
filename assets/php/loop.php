@@ -1,76 +1,78 @@
-<?php include ('check.php') ;?>
-
-<?php 
-
-    $datafile = '../data/datadir.json';
-    $str = file_get_contents($datafile);
-    $json = json_decode( $str, true);
-    $datadir = $json['datadir'];
-    $jsonfileuserdata = $datadir . 'user_preferences-data.json';
-
-    if(!is_file($jsonfileuserdata)){
-
-        $path = "../";
-
-        include_once ('../config/monitorr-data-default.php');
-                
-        $jsonservices;
-
-        $jsonsite;
-    } 
-
-    else {
-
-        $datafile = '../data/datadir.json';
-
-        include_once ('../config/monitorr-data.php');
-
-        $jsonservices;
-
-        $jsonsite;
-    }
-
-    $myServices = $jsonservices;
-
+<?php
+include(__DIR__ . '/functions.php');
+include(__DIR__ . '/auth_check.php');
 ?>
 
-<?php foreach ( $myServices as $v1 => $v2 ) { ?>
+<?php foreach ($services as $key => $service) { ?>
 
-    <?php 
+	<?php
 
-        if($v2['enabled'] == "Yes") {
+	if ($service['enabled'] == "Yes") {
 
-            if($v2['type'] == " Standard") {
-                echo "<div>";
-                    urlExists($v2['checkurl']);
-                echo "</div>";
-            }
+		echo '<div class="col-lg-4">';
 
-            else {
-                echo "<div>";
-                    ping($v2['checkurl']);
-                echo "</div>";
-            }
-        }
+		if ($service['ping'] == "Enabled") {
+			$pingTime = ping($service['checkurl']);
 
-        else {
-                // Remove offline log file if disabled://
+			$pingok = $settings['pingok'];
+			$pingwarn = $settings['pingwarn'];
 
-            $servicefile = ($v2['serviceTitle']).'.offline.json';                    
-            $fileoffline = '../data/logs/'.$servicefile;
+			if ($pingTime < $pingok) {
+				$pingid = 'pinggreen';
+			} elseif (($pingTime >= $pingok) && ($pingTime < $pingwarn)) {
+				$pingid = 'pingyellow';
+			} else {
+				$pingid = 'pingred';
+			}
 
-            if(is_file($fileoffline)){
-                rename($fileoffline, '../data/logs/offline.json.old');
-            } 
-        }
-    ?>
+			echo '<div id="pingindicator">';
+			echo '<div id="' . $pingid . '" class="pingcircle" title="Ping response time: ' . $pingTime . ' ms"> </div>';
+			echo "<script type='text/javascript'>";
+			echo "console.log('" . $service['serviceTitle'] . " Ping time: " . $pingTime . " ms');";
+			echo "</script>";
+			echo '</div>';
 
-<?php } ?> 
+		} else {
 
-        <!-- Remove loading modal after page onload: -->
+		}
 
-   <script type='text/javascript'>
-        $('.pace-activity').addClass('hidepace');
-        $('.modalloadingindex').addClass('hidemodal');
-        console.log("Service check complete");
-   </script>
+
+		if ($service['link'] == "Yes") {
+			echo '<a class="servicetile" href="' . $service['linkurl'] . '" target="_blank" style="display: block">';
+		} else {
+			echo '<div class="servicetilenolink" style="display: block; cursor: default">';
+		}
+
+		echo '<div id="serviceimg">';
+		echo '<div><img id="' . strtolower($service['serviceTitle']) . '-service-img" src="assets/img/' . strtolower($service['image']) . '" class="serviceimg" alt=' . strtolower($service['serviceTitle']) . '></div>';
+		echo '</div>';
+
+		echo '<div id="servicetitle">';
+		echo '<div>' . ucfirst($service['serviceTitle']) . '</div>';
+		echo '</div>';
+
+		echo '<div class="btnonline">Online</div>';
+
+		if ($service['link'] == "Yes") {
+			echo '</a>';
+		} else {
+			echo '</div>';
+		}
+		echo '</div>';
+	} else {
+		// Remove offline log file if disabled://
+		$servicefile = ($service['serviceTitle']) . '.offline.json';
+		$fileoffline = '../data/logs/' . $servicefile;
+
+		if (is_file($fileoffline)) {
+			rename($fileoffline, '../data/logs/offline.json.old');
+		}
+	}
+} ?>
+<!-- Remove loading modal after page onload: -->
+
+<script type='text/javascript'>
+    $('.pace-activity').addClass('hidepace');
+    $('.modalloadingindex').addClass('hidemodal');
+    console.log("Service check complete");
+</script>

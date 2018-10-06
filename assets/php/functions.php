@@ -1,26 +1,27 @@
 <?php
+include(__DIR__ . '/classes/Ping.php');
+
+if (!is_file(__DIR__ . '../../data/datadir.json')
+	|| file_get_contents(__DIR__ . '../../data/datadir.json') == ""
+	|| !key_exists("datadir", json_decode(file_get_contents(__DIR__ . '../../data/datadir.json'), 1))
+	|| !is_file(json_decode(file_get_contents(__DIR__ . '../../data/datadir.json'), 1)['datadir'] . 'config.json')
+) {
+	//invalid/unset datadir, start configuration process
+	$_GET['action'] = 'config';
+	include_once(__DIR__ . '/auth_check.php');
+	exit();
+}
+
+// Data Dir
+$datadir_json = json_decode(file_get_contents(__DIR__ . '../../data/datadir.json'), 1);
+$datadir = $datadir_json['datadir'];
 
 
-        $datafile = '../data/datadir.json';
-        $str = file_get_contents($datafile);
-        $json = json_decode( $str, true);
-        $datadir = $json['datadir'];
-        $jsonfileuserdata = $datadir . 'user_preferences-data.json';
-
-        if(!is_file($jsonfileuserdata)){    
-
-            $path = "../";
-
-            include_once ('../config/monitorr-data-default.php');
-
-        } 
-
-        else {
-
-            $datafile = '../data/datadir.json';
-
-            include_once ('../config/monitorr-data.php');
-        }
+$config_file = $datadir . '/config.json';
+$preferences = json_decode(file_get_contents($config_file), 1)['preferences'];
+$settings = json_decode(file_get_contents($config_file), 1)['settings'];
+$services = json_decode(file_get_contents($config_file), 1)['services'];
+$authentication = json_decode(file_get_contents($config_file), 1)['authentication'];
 
 
 // get CPUload function
@@ -119,12 +120,10 @@ function getServerLoad()
         }
     }
 
-    return $load;
+    return round($load, 2);
 }
 
 // register variable for getServerLoad()
-$cpuLoad = getServerLoad();
-$cpuPercent = round($cpuLoad, 2);
 
 
 
@@ -161,9 +160,6 @@ function getRamTotal()
 	}
 }
 
-//define totalRam variable
-$totalRam = getRamTotal();
-
 function getRamFree()
 {
     $result = 0;
@@ -194,12 +190,11 @@ function getRamFree()
 	}
 }
 
-//define free ram variable
-$freeRam = getRamFree();
-
-//get Used RAM
-$usedRam = $totalRam - $freeRam;
-$ramPercent = round(($usedRam / $totalRam) * 100);
+function getRamPercentage(){
+	$usedRam = getRamTotal() - getRamFree();
+	$ramPercent = round(($usedRam / getRamTotal()) * 100);
+	return $ramPercent;
+}
 
 
 
@@ -210,9 +205,9 @@ $ramPercent = round(($usedRam / $totalRam) * 100);
 
     global $disk1;
 
-    if(isset($jsonsite['disk1'])) {
+    if(isset($settings['disk1'])) {
 
-        $disk1 = $jsonsite['disk1'];
+        $disk1 = $settings['disk1'];
 
         $freeHD1 = getHDFree1();
     }
@@ -235,8 +230,8 @@ function getHDFree1() {
 }
     // Dynamic icon colors for badges:
 
-    $hdok = $jsonsite['hdok'];
-    $hdwarn = $jsonsite['hdwarn'];
+    $hdok = $settings['hdok'];
+    $hdwarn = $settings['hdwarn'];
 
     if (isset($disk1)) {
 
@@ -254,9 +249,9 @@ function getHDFree1() {
 
     global $disk2;
 
-    if(isset($jsonsite['disk2'])) {
+    if(isset($settings['disk2'])) {
 
-        $disk2 = $jsonsite['disk2'];
+        $disk2 = $settings['disk2'];
 
         $freeHD2 = getHDFree2();
     }
@@ -280,8 +275,8 @@ function getHDFree2() {
 
     // Dynamic icon colors for badges
  
-    $hdok = $jsonsite['hdok'];
-    $hdwarn = $jsonsite['hdwarn'];
+    $hdok = $settings['hdok'];
+    $hdwarn = $settings['hdwarn'];
 
     if (isset($disk2)) {
 
@@ -299,9 +294,9 @@ function getHDFree2() {
 
     global $disk3;
 
-    if(isset($jsonsite['disk3'])) {
+    if(isset($settings['disk3'])) {
 
-        $disk3 = $jsonsite['disk3'];
+        $disk3 = $settings['disk3'];
 
         $freeHD3 = getHDFree3();
     }
@@ -325,8 +320,8 @@ function getHDFree3() {
 
     // Dynamic icon colors for badges
  
-    $hdok = $jsonsite['hdok'];
-    $hdwarn = $jsonsite['hdwarn'];
+    $hdok = $settings['hdok'];
+    $hdwarn = $settings['hdwarn'];
 
 
     if (isset($disk3)) {
@@ -342,87 +337,119 @@ function getHDFree3() {
 
 
 //uptime
-$uptime = shell_exec("cut -d. -f1 /proc/uptime");
-$days = floor($uptime) / 60 / 60 / 24;
-$days_padded = sprintf("%02d", $days);
-$hours = round($uptime) / 60 / 60 % 24;
-$hours_padded = sprintf("%02d", $hours);
-$mins = round($uptime) / 60 % 60;
-$mins_padded = sprintf("%02d", $mins);
-$secs = round($uptime) % 60;
-$secs_padded = sprintf("%02d", $secs);
-// $total_uptime = "$days_padded:$hours_padded:$mins_padded:$secs_padded";
-$total_uptime = "$days_padded:$hours_padded:$mins_padded";
+function getTotalUptime(){
+    $uptime = shell_exec("cut -d. -f1 /proc/uptime");
+    $days = floor($uptime) / 60 / 60 / 24;
+    $days_padded = sprintf("%02d", $days);
+    $hours = round($uptime) / 60 / 60 % 24;
+    $hours_padded = sprintf("%02d", $hours);
+    $mins = round($uptime) / 60 % 60;
+    $mins_padded = sprintf("%02d", $mins);
+    $secs = round($uptime) % 60;
+    $secs_padded = sprintf("%02d", $secs);
+    return "$days_padded:$hours_padded:$mins_padded";
+}
 
 // Dynamic icon colors for badges
+function getRamClass($percentage)
+{
+	$ramok = $GLOBALS['settings']['ramok'];
+	$ramwarn = $GLOBALS['settings']['ramwarn'];
 
-    $ramok = $jsonsite['ramok'];
-    $ramwarn = $jsonsite['ramwarn'];
 
-
-if ($ramPercent < $ramok) {
-    $ramClass = 'success';
-} elseif (($ramPercent >= $ramok) && ($ramPercent < $ramwarn)) {
-    $ramClass = 'warning';
-} else {
-    $ramClass = 'danger';
+	if ($percentage < $ramok) {
+		$ramClass = 'success';
+	} elseif (($percentage >= $ramok) && ($percentage < $ramwarn)) {
+		$ramClass = 'warning';
+	} else {
+		$ramClass = 'danger';
+	}
+	return$ramClass;
 }
 
-    $cpuok = $jsonsite['cpuok'];
-    $cpuwarn = $jsonsite['cpuwarn'];
+function getCPUClass($percentage)
+{
+    $cpuok = $GLOBALS['settings']['cpuok'];
+	$cpuwarn = $GLOBALS['settings']['cpuwarn'];
 
-if ($cpuPercent < $cpuok) {
-    $cpuClass = 'success';
-} elseif (($cpuPercent >= $cpuok) && ($cpuPercent < $cpuwarn)) {
-    $cpuClass = 'warning';
-} else {
-    $cpuClass = 'danger';
+	if ($percentage < $cpuok) {
+		$cpuClass = 'success';
+	} elseif (($percentage >= $cpuok) && ($percentage < $cpuwarn)) {
+		$cpuClass = 'warning';
+	} else {
+		$cpuClass = 'danger';
+	}
+	return $cpuClass;
 }
 
+function ping($pings)
+{
+	$type = gettype($pings);
+	$ping = new Ping("");
+	$ping->setTtl(128);
+	$ping->setTimeout(2);
+	switch ($type) {
+		case "array":
+			$results = [];
+			foreach ($pings as $k => $v) {
+				if (strpos($v, ':') !== false) {
+					$domain = explode(':', $v)[0];
+					$port = explode(':', $v)[1];
+					$ping->setHost($domain);
+					$ping->setPort($port);
+					$latency = $ping->ping('fsockopen');
+				} else {
+					$ping->setHost($v);
+					$latency = $ping->ping();
+				}
+				if ($latency || $latency === 0) {
+					$results[$v] = $latency;
+				} else {
+					$results[$v] = false;
+				}
+			}
+			break;
+		case "string":
+			if (strpos($pings, ':') !== false) {
+				$domain = explode(':', $pings)[0];
+				$port = explode(':', $pings)[1];
+				$ping->setHost($domain);
+				$ping->setPort($port);
+				$latency = $ping->ping('fsockopen');
+			} else {
+				$ping->setHost($pings);
+				$latency = $ping->ping();
+			}
+			if ($latency || $latency === 0) {
+				$results = $latency;
+			} else {
+				$results = false;
+			}
+			break;
+	}
+	return $results;
+}
 
-/**
-* Returns ping in milliseconds
-* Returns false if host is unavailable
-*
-* @param $host
-* @param int $port
-* @param int $timeout
-* @return bool|float
-*/
-    
-    $pinghost = $jsonsite['pinghost'];
-    //echo $pinghost;
+function getPingClass($pingTime){
+	$pingok = $GLOBALS['settings']['pingok'];
+	$pingwarn = $GLOBALS['settings']['pingwarn'];
 
-    $pingport = $jsonsite['pingport'];
-    // echo $pingport;
-
-    function ping($host, $port = 53, $timeout = 1) {
-        $start = microtime(true);
-        if (!fsockopen($host, $port, $errno, $errstr, $timeout)) {
-            return false;
-        }
-        $end = microtime(true);
-        return round((($end - $start) * 1000));
-    }
-
- $pingTime = ping($pinghost, $pingport);
-
-    $pingok = $jsonsite['pingok'];
-    $pingwarn = $jsonsite['pingwarn'];
+	if(strpos($pingTime, '?') !== false) return 'danger';
 
     if ($pingTime < $pingok) {
-            $pingclass = 'success';
+	    $pingclass = 'success';
     } elseif (($pingTime >= $pingok) && ($pingTime < $pingwarn)) {
-            $pingclass = 'warning';
+	    $pingclass = 'warning';
     } else {
-            $pingclass = 'danger';
+	    $pingclass = 'danger';
     }
+    return $pingclass;
+}
+
 
 
 // New version download information
-
-   
-    $branch = $jsonusers['updateBranch'];
+$branch = $preferences['updateBranch'];
 
 
 // location to download new version zip
@@ -464,4 +491,8 @@ function delTree($dir) {
     return rmdir($dir);
   }
 
+function configExists()
+{
+	return is_file($GLOBALS['config_file']);
+}
 ?>

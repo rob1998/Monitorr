@@ -1,3 +1,74 @@
+function statusCheck() {
+    console.log('Service check START | Interval: ' + settings.rfsysinfo + ' ms');
+    $("#stats").load('assets/php/systembadges.php');
+    $("#statusloop").load('assets/php/loop.php');
+}
+function showpace() {
+    $('.pace-activity').addClass('showpace');
+}
+function refreshConfig(updateServices) {
+    $.ajax({
+        url: "assets/php/sync-config.php",
+        type: "GET",
+        success: function (response) {
+
+            let json = JSON.parse(response);
+            settings = json.settings;
+            preferences = json.preferences;
+            services = json.services;
+
+            setTimeout(function () {
+                refreshConfig()
+            }, settings.rfconfig); //delay is rftime
+
+
+            $("#auto-update-status").attr("data-enabled", settings.logRefresh);
+
+            if (updateServices) {
+                if (settings.logRefresh == "true" && (logInterval == false || settings.rflog != current_rflog)) {
+                    clearInterval(nIntervId);
+                    nIntervId = setInterval(refreshblockUI, settings.rflog);
+                    logInterval = true;
+                    $("#autoUpdateSlider").attr("data-enabled", "true");
+                    current_rflog = settings.rflog;
+                    console.log("Auto update: Enabled | Interval: " + settings.rflog + " ms");
+                    $.growlUI("Auto update: Enabled");
+                } else if (settings.logRefresh == "false" && logInterval == true) {
+                    clearInterval(nIntervId);
+                    logInterval = false;
+                    $("#autoUpdateSlider").attr("data-enabled", "false");
+                    console.log("Auto update: Disabled");
+                    $.growlUI("Auto update: Disabled");
+                }
+            }
+
+            document.title = preferences.sitetitle; //update page title to configured title
+            //console.log('Refreshed config variables');
+        }
+    });
+}
+
+function syncServerTime() {
+    console.log('Monitorr time update START | Interval: ' + settings.rftime + ' ms');
+    $.ajax({
+        url: "assets/php/time.php",
+        type: "GET",
+        success: function (response) {
+            var response = $.parseJSON(response);
+            servertime = response.serverTime;
+            timeStandard = parseInt(response.timeStandard);
+            timeZone = response.timezoneSuffix;
+            rftime = response.rftime;
+            date = new Date(servertime);
+            setTimeout(function () {
+                syncServerTime()
+            }, settings.rftime); //delay is rftime
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log('Monitorr time update START');
+        }
+    });
+}
 function parseGithubToHTML(result) {
 
     result = result.replace(/\n/g, '<br />'); //convert line breaks
@@ -60,4 +131,46 @@ function parseGithubToHTML(result) {
     }
 
     return result;
+}
+
+function load_info() {
+    document.getElementById("setttings-page-title").innerHTML = 'Information';
+    document.getElementById("includedContent").innerHTML = '<object  type="text/html" class="object" data="assets/php/settings/info.php" ></object>';
+    $(".sidebar-nav-item").removeClass('active');
+    $("li[data-item='info']").addClass("active");
+}
+
+function load_preferences() {
+    document.getElementById("setttings-page-title").innerHTML = 'User Preferences';
+    document.getElementById("includedContent").innerHTML = '<object type="text/html" class="object" data="assets/php/settings/user_preferences.php" ></object>';
+    $(".sidebar-nav-item").removeClass('active');
+    $("li[data-item='user-preferences']").addClass("active");
+}
+
+function load_settings() {
+    document.getElementById("setttings-page-title").innerHTML = 'Monitorr Settings';
+    document.getElementById("includedContent").innerHTML = '<object type="text/html" class="object" data="assets/php/settings/site_settings.php" ></object>';
+    $(".sidebar-nav-item").removeClass('active');
+    $("li[data-item='monitorr-settings']").addClass("active");
+}
+
+function load_authentication() {
+    document.getElementById("setttings-page-title").innerHTML = 'Monitorr Authentication';
+    document.getElementById("includedContent").innerHTML = '<object type="text/html" class="object" data="assets/php/settings/authentication.php" ></object>';
+    $(".sidebar-nav-item").removeClass('active');
+    $("li[data-item='monitorr-authentication']").addClass("active");
+}
+
+function load_services() {
+    document.getElementById("setttings-page-title").innerHTML = 'Services Configuration';
+    document.getElementById("includedContent").innerHTML = '<object type="text/html" class="object" data="assets/php/settings/services_settings.php" ></object>';
+    $(".sidebar-nav-item").removeClass('active');
+    $("li[data-item='logs-configuration']").addClass("active");
+}
+
+function load_registration() {
+    document.getElementById("setttings-page-title").innerHTML = 'Registration';
+    document.getElementById("includedContent").innerHTML = '<object type="text/html" class="object" data="assets/php/settings/registration.php" ></object>';
+    $(".sidebar-nav-item").removeClass('active');
+    $("li[data-item='registration']").addClass("active");
 }

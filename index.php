@@ -13,7 +13,7 @@ __  __             _ _
 | |  | | (_) | | | | | || (_) | |  | |
 |_|  |_|\___/|_| |_|_|\__\___/|_|  |_|
 		made for the community
-by @seanvree, @wjbeckett, and @jonfinley
+by @seanvree, @wjbeckett, @rob1998 and @jonfinley
 https://github.com/Monitorr/Monitorr
 -->
 
@@ -177,7 +177,7 @@ https://github.com/Monitorr/Monitorr
 
 </head>
 
-<body onload="statusCheck(true), showpace()">
+<body onload="showpace()">
 
 <!-- Fade-in effect: -->
 <script>
@@ -290,12 +290,13 @@ https://github.com/Monitorr/Monitorr
 
 </div>
 
-<!-- Loading modal indicator: -->
+<!-- Loading modal indicator:
 <div id="modalloadingindex" class="modalloadingindex" title="Monitorr is checking services.">
 
     <p class="modaltextloadingindex">Monitorr is loading ...</p>
 
 </div>
+ -->
 
 <div id="services" class="container">
 
@@ -304,35 +305,22 @@ https://github.com/Monitorr/Monitorr
             <?php
                 foreach ($services as $key => $service) {
 	                if ($service['enabled'] == "Yes") {
+                        ?>
+		                <div id="service-<?php echo $service['serviceTitle'];?>"  class="col-lg-4" >
+                            <div id="pingindicator-<?php echo $service['serviceTitle']?>">
+                                <div class="pingcircle"></div>
+                            </div>
 
-		                echo '<div class="col-lg-4" id="service-' . $service['serviceTitle'] . '">';
+                            <div class="servicetile <?php if ($service['link'] == "No") echo "nolink";?>" data-location="<?php echo $service['linkurl'];?>" style="display: block">
 
-		                $styleProp = "";
-		                if ($service['ping'] == "Enabled") $styleProp = "style='display:none;'";
-		                echo '<div id="pingindicator-' . $service['serviceTitle'] . '" ' . $styleProp . '>';
-		                echo '<div class="pingcircle"></div>';
-		                echo '</div>';
-
-		                if ($service['link'] == "Yes") {
-			                echo '<a class="servicetile" href="' . $service['linkurl'] . '" target="_blank" style="display: block">';
-		                } else {
-			                echo '<div class="servicetile nolink" style="display: block; cursor: default">';
-		                }
-
-		                echo '<img id="' . strtolower($service['serviceTitle']) . '-service-img" src="assets/img/' . strtolower($service['image']) . '" class="serviceimg" alt=' . strtolower($service['serviceTitle']) . '>';
-
-		                echo '<div class="servicetitle">';
-		                echo '<div>' . ucfirst($service['serviceTitle']) . '</div>';
-		                echo '</div>';
-
-		                echo '<div id="status-' . $service['serviceTitle'] . '">Loading</div>';
-
-		                if ($service['link'] == "Yes") {
-			                echo '</a>';
-		                } else {
-			                echo '</div>';
-		                }
-		                echo '</div>';
+                                <img id="<?php echo strtolower($service['serviceTitle']);?>-service-img" src="assets/img/<?php echo strtolower($service['image']);?>" class="serviceimg" alt='<?php echo strtolower($service['serviceTitle']);?>'>
+                                <div class="servicetitle">
+                                    <?php echo ucfirst($service['serviceTitle']);?>
+                                </div>
+                                <div id="status-<?php echo $service['serviceTitle'];?>">Loading</div>
+                            </div>
+                        </div>
+                    <?php
 	                } else {
 		                // Remove offline log file if disabled://
 		                $servicefile = ($service['serviceTitle']) . '.offline.json';

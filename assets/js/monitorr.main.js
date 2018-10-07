@@ -3,37 +3,50 @@
 function statusCheck(override) {
 
     if ($("#buttonStart input:checkbox").is(':checked') || override) {
-        $("#modalloadingindex").fadeIn("slow");
         console.log('Service check START | Interval: ' + settings.rfsysinfo + ' ms');
-
         getSystemBadges();
         checkServices();
-
-        $("#modalloadingindex").fadeOut("slow");
-
         setTimeout(statusCheck, settings.rfsysinfo);
     }
 
 }
 
 function checkServices() {
+    let titleArray = [];
     for(let i = 0; i<services.length; i++) {
         let $service = services[i];
         let $serviceDiv = $('#service-' + $service.serviceTitle);
 
         if ( $serviceDiv.length){
-            if($service.ping == "Enabled") {
-                $("#pingindicator-"+$service.serviceTitle).show();
-                ping($service);
-            } else {
-                $("#pingindicator-"+$service.serviceTitle).hide();
-            }
+            ping($service);
         } else {
-
+            let html = "";
+            html += "<div id=\"service-" + $service.serviceTitle + "\"  class=\"col-lg-4\" >";
+            html += "   <div id=\"pingindicator-" + $service.serviceTitle + "\" >";
+            html += "       <div class=\"pingcircle\"></div>";
+            html += "   </div>";
+            if($service.link == "Yes"){
+                html += "   <div class=\"servicetile\" data-location=\"" + $service.linkurl + "\" style=\"display: block\">";
+            } else {
+                html += "   <div class=\"servicetile nolink\" data-location=\"" + $service.linkurl + "\" style=\"display: block\">";
+            }
+            html += "       <img id=\"" + $service.serviceTitle + "-service-img\" src=\"assets/img/" + $service.image.toLowerCase() + "\" class=\"serviceimg\" alt='" + $service.serviceTitle + "'>";
+            html += "       <div class=\"servicetitle\">";
+            html +=             $service.serviceTitle;
+            html += "       </div>";
+            html += "       <div id=\"status-" + $service.serviceTitle + "\">Loading</div>";
+            html += "   </div>";
+            html += "</div>";
+            $("#statusloop").append(html);
+            ping($service);
         }
+        titleArray.push($service.serviceTitle);
     }
 
-    //TODO: cleanup services that no longer exist or have different names
+    $("#statusloop > div").each(function () {
+        let title = $(this).prop("id").split("-")[1];
+        if($.inArray(title, titleArray) == -1) $(this).remove();
+    });
 }
 
 function ping(service) {

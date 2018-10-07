@@ -8,6 +8,7 @@ $result = array();
 //Get request method
 $method = $_SERVER['REQUEST_METHOD'];
 $pretty = isset($_GET['pretty']) ? true : false;
+$api_key = isset($_GET['api_key']) ? $_GET['api_key'] : "";
 $function = (key($_GET) ? str_replace("/", "_", key($_GET)) : false);
 //Exit if $function is blank
 if ($function === false) {

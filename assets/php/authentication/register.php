@@ -21,7 +21,7 @@
                     .fail(function () {
                         alert("Posting failed (ajax)");
                         console.log("Posting failed (ajax)");
-                    })
+                    });
 
                 return false;
             });
@@ -53,7 +53,7 @@
                     .fail(function () {
                         alert("Posting failed (ajax)");
                         console.log("Posting failed (ajax)");
-                    })
+                    });
 
                 return false;
             });

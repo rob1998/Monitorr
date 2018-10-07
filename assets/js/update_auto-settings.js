@@ -19,7 +19,7 @@ $(document).ready(function(){
 			   $('#version_check_auto').html("");
 			   // check for version verification
 			   if(data.version != 0){
-				   var uInfo = "uid="+uid+"&version="+data.version
+				   var uInfo = "uid="+uid+"&version="+data.version;
 				   console.log('A Monitorr update is available.');
 
 				   	$('#version_check_auto').html(

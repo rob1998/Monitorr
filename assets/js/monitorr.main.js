@@ -1,7 +1,7 @@
 function ping(url) {
     $.ajax({
         type: "POST",
-        url: "assets/php/api.php?v1/getPing",
+        url: "api/?v1/getPing",
         data: {'url': url},
         dataType: "json",
         success: function(data){
@@ -12,13 +12,148 @@ function ping(url) {
 }
 
 function statusCheck() {
+    for(let i = 0; i<services.length; i++) {
+
+    }
     console.log('Service check START | Interval: ' + settings.rfsysinfo + ' ms');
-    $("#stats").load('assets/php/systembadges.php');
     $("#statusloop").load('assets/php/loop.php');
 }
 function showpace() {
     $('.pace-activity').addClass('showpace');
 }
+
+function getSystemBadges() {
+    console.log('Updating system badges | Interval: ' + settings.rfsysinfo + ' ms');
+    $.ajax({
+        url: "assets/php/systembadges.php",
+        type: "GET",
+        success: function (response) {
+            let data = JSON.parse(response);
+
+            //<editor-fold desc="values">
+            $("#cpu > .value").text(data.serverLoad + "%");
+            $("#ram > .value").text(data.ramPercentage + "%");
+            $("#uptime > .value").text(data.totalUptime);
+            $("#ping > .value").text(data.pingTime + "ms");
+            if(data.disk1Usage != "?") {
+                $("#hdpercent1").show();
+                $("#hdlabel1").show();
+                $("#hdpercent1").text(data.disk1Usage + "%");
+            } else {
+                $("#hdpercent1").hide();
+                $("#hdlabel1").hide();
+            }
+            if(data.disk2Usage != "?") {
+                $("#hdpercent2").show();
+                $("#hdlabel2").show();
+                $("#hdpercent2").text(data.disk2Usage + "%");
+            } else {
+                $("#hdpercent2").hide();
+                $("#hdlabel2").hide();
+            }
+            if(data.disk3Usage != "?") {
+                $("#hdpercent3").show();
+                $("#hdlabel3").show();
+                $("#hdpercent3").text(data.disk3Usage + "%");
+            } else {
+                $("#hdpercent3").hide();
+                $("#hdlabel3").hide();
+            }
+            //</editor-fold>
+
+            //<editor-fold desc="classes">
+            //<editor-fold desc="cpu class">
+                var cpuok = settings.cpuok;
+                var cpuwarn = settings.cpuwarn;
+                var cpuClass;
+                if (data.serverLoad < cpuok) {
+                    cpuClass = 'success';
+                } else if ((data.serverLoad >= cpuok) && (data.serverLoad < cpuwarn)) {
+                    cpuClass = 'warning';
+                } else {
+                    cpuClass = 'danger';
+                }
+                $("#cpu > span:first").addClass(cpuClass);
+            //</editor-fold>
+
+            //<editor-fold desc="ram class">
+                var ramok = settings.ramok;
+                var ramwarn = settings.ramwarn;
+                var ramClass;
+                if (data.ramPercentage < ramok) {
+                    ramClass = 'success';
+                } else if ((data.ramPercentage >= ramok) && (data.ramPercentage < ramwarn)) {
+                    ramClass = 'warning';
+                } else {
+                    ramClass = 'danger';
+                }
+                $("#ram > span:first").addClass(ramClass);
+            //</editor-fold>
+
+            //<editor-fold desc="ping class">
+                var pingok = settings.pingok;
+                var pingwarn = settings.pingwarn;
+                var pingClass;
+                if(data.pingTime == "?") pingClass =  'danger';
+                else if (data.pingTime < pingok) {
+                    pingClass = 'success';
+                } else if ((data.pingTime >= pingok) && (data.pingTime < pingwarn)) {
+                    pingClass = 'warning';
+                } else {
+                    pingClass = 'danger';
+                }
+                $("#ping > span:first").addClass(pingClass);
+            //</editor-fold>
+
+            //<editor-fold desc="disk classes">
+                var diskok = settings.hdok;
+                var diskwarn = settings.hdwarn;
+                if(data.disk1Usage != "?") {
+                    //<editor-fold desc="disk1 class">
+                        var disk1Class;
+                        if (data.disk1Usage < diskok) {
+                            disk1Class = 'success';
+                        } else if ((data.disk1Usage >= diskok) && (data.disk1Usage < diskwarn)) {
+                            disk1Class = 'warning';
+                        } else {
+                            disk1Class = 'danger';
+                        }
+                        $("#hdlabel1").addClass(disk1Class);
+                    //</editor-fold>
+                }
+                if(data.disk2Usage != "?") {
+                    //<editor-fold desc="disk2 class">
+                    var disk2Class;
+                    if (data.disk2Usage < diskok) {
+                        disk2Class = 'success';
+                    } else if ((data.disk2Usage >= diskok) && (data.disk2Usage < diskwarn)) {
+                        disk2Class = 'warning';
+                    } else {
+                        disk2Class = 'danger';
+                    }
+                    $("#hdlabel2").addClass(disk2Class);
+                    //</editor-fold>
+                }
+                if(data.disk3Usage != "?") {
+                    //<editor-fold desc="disk3 class">
+                    var disk3Class;
+                    if (data.disk3Usage < diskok) {
+                        disk3Class = 'success';
+                    } else if ((data.disk3Usage >= diskok) && (data.disk3Usage < diskwarn)) {
+                        disk3Class = 'warning';
+                    } else {
+                        disk3Class = 'danger';
+                    }
+                    $("#hdlabel3").addClass(disk3Class);
+                    //</editor-fold>
+                }
+            //</editor-fold>
+            //</editor-fold>
+        }
+    });
+    setTimeout(getSystemBadges, settings.rfsysinfo);
+}
+
 function refreshConfig(updateServices) {
     $.ajax({
         url: "assets/php/sync-config.php",

@@ -196,145 +196,41 @@ function getRamPercentage(){
 	return $ramPercent;
 }
 
-
-
 // getHD function
+function getHDFree($hdd) {
+    if(isset($GLOBALS['settings'][$hdd])) {
+		$disk = $GLOBALS['settings'][$hdd];
+	    //hdd stat
 
+	    $stat['hdd_free'] = round(disk_free_space($disk) / 1024 / 1024 / 1024, 2);
 
- ////// HD1 ///////
+	    $stat['hdd_total'] = round(disk_total_space($disk) / 1024 / 1024/ 1024, 2);
 
-    global $disk1;
+	    $stat['hdd_used'] = $stat['hdd_total'] - $stat['hdd_free'];
+	    $stat['hdd_percent'] = round(sprintf('%.1f',($stat['hdd_used'] / $stat['hdd_total']) * 100), 2);
+	    $stat['hdd_percent'];
 
-    if(isset($settings['disk1'])) {
-
-        $disk1 = $settings['disk1'];
-
-        $freeHD1 = getHDFree1();
+	    return  $stat['hdd_percent'];
     }
-
-function getHDFree1() {
-    
-    global $disk1;
-
-    //hdd stat
-
-    $stat['hdd_free'] = round(disk_free_space($disk1) / 1024 / 1024 / 1024, 2);
-    
-    $stat['hdd_total'] = round(disk_total_space($disk1) / 1024 / 1024/ 1024, 2);
-
-    $stat['hdd_used'] = $stat['hdd_total'] - $stat['hdd_free'];
-    $stat['hdd_percent'] = round(sprintf('%.1f',($stat['hdd_used'] / $stat['hdd_total']) * 100), 2);
-    $stat['hdd_percent'];
-
-    return  $stat['hdd_percent'];
-}
-    // Dynamic icon colors for badges:
-
-    $hdok = $settings['hdok'];
-    $hdwarn = $settings['hdwarn'];
-
-    if (isset($disk1)) {
-
-        if ($freeHD1 < $hdok) {
-                $hdClass1 = 'success';
-        } elseif (($freeHD1 >= $hdok) && ($freeHD1 < $hdwarn)) {
-                $hdClass1 = 'warning';
-        } else {
-                $hdClass1 = 'danger';
-        }
-    }
-
-
-////// HD2 ///////
-
-    global $disk2;
-
-    if(isset($settings['disk2'])) {
-
-        $disk2 = $settings['disk2'];
-
-        $freeHD2 = getHDFree2();
-    }
-
-function getHDFree2() {
-
-    global $disk2;
-
-        //hdd stat
-
-        $stat['hdd_free'] = round(disk_free_space($disk2) / 1024 / 1024 / 1024, 2);
-        
-        $stat['hdd_total'] = round(disk_total_space($disk2) / 1024 / 1024/ 1024, 2);
-
-        $stat['hdd_used'] = $stat['hdd_total'] - $stat['hdd_free'];
-        $stat['hdd_percent'] = round(sprintf('%.1f',($stat['hdd_used'] / $stat['hdd_total']) * 100), 2);
-        $stat['hdd_percent'];
-
-        return  $stat['hdd_percent'];
+    return false;
 }
 
-    // Dynamic icon colors for badges
- 
-    $hdok = $settings['hdok'];
-    $hdwarn = $settings['hdwarn'];
+function getHDClass($percentage){
+	// Dynamic icon colors for badges:
 
-    if (isset($disk2)) {
+	$hdok = $GLOBALS['settings']['hdok'];
+	$hdwarn = $GLOBALS['settings']['hdwarn'];
 
-        if ($freeHD2 < $hdok) {
-                $hdClass2 = 'success';
-        } elseif (($freeHD2 >= $hdok) && ($freeHD2 < $hdwarn)) {
-                $hdClass2 = 'warning';
-        } else {
-                $hdClass2 = 'danger';
-        }
-    }
+	if ($percentage < $hdok) {
+		$hdClass = 'success';
+	} elseif (($percentage >= $hdok) && ($percentage < $hdwarn)) {
+		$hdClass = 'warning';
+	} else {
+		$hdClass = 'danger';
+	}
 
-        
-////// HD3 ///////
-
-    global $disk3;
-
-    if(isset($settings['disk3'])) {
-
-        $disk3 = $settings['disk3'];
-
-        $freeHD3 = getHDFree3();
-    }
-
-function getHDFree3() {
-
-    global $disk3;
-
-        //hdd stat
-
-        $stat['hdd_free'] = round(disk_free_space($disk3) / 1024 / 1024 / 1024, 2);
-        
-        $stat['hdd_total'] = round(disk_total_space($disk3) / 1024 / 1024/ 1024, 2);
-
-        $stat['hdd_used'] = $stat['hdd_total'] - $stat['hdd_free'];
-        $stat['hdd_percent'] = round(sprintf('%.1f',($stat['hdd_used'] / $stat['hdd_total']) * 100), 2);
-        $stat['hdd_percent'];
-
-        return  $stat['hdd_percent'];
+	return $hdClass;
 }
-
-    // Dynamic icon colors for badges
- 
-    $hdok = $settings['hdok'];
-    $hdwarn = $settings['hdwarn'];
-
-
-    if (isset($disk3)) {
-
-        if ($freeHD3 < $hdok) {
-                $hdClass3 = 'success';
-        } elseif (($freeHD3 >= $hdok) && ($freeHD3 < $hdwarn)) {
-                $hdClass3 = 'warning';
-        } else {
-                $hdClass3 = 'danger';
-        }
-    }
-
 
 //uptime
 function getTotalUptime(){
@@ -350,37 +246,6 @@ function getTotalUptime(){
     return "$days_padded:$hours_padded:$mins_padded";
 }
 
-// Dynamic icon colors for badges
-function getRamClass($percentage)
-{
-	$ramok = $GLOBALS['settings']['ramok'];
-	$ramwarn = $GLOBALS['settings']['ramwarn'];
-
-
-	if ($percentage < $ramok) {
-		$ramClass = 'success';
-	} elseif (($percentage >= $ramok) && ($percentage < $ramwarn)) {
-		$ramClass = 'warning';
-	} else {
-		$ramClass = 'danger';
-	}
-	return$ramClass;
-}
-
-function getCPUClass($percentage)
-{
-    $cpuok = $GLOBALS['settings']['cpuok'];
-	$cpuwarn = $GLOBALS['settings']['cpuwarn'];
-
-	if ($percentage < $cpuok) {
-		$cpuClass = 'success';
-	} elseif (($percentage >= $cpuok) && ($percentage < $cpuwarn)) {
-		$cpuClass = 'warning';
-	} else {
-		$cpuClass = 'danger';
-	}
-	return $cpuClass;
-}
 
 function ping($pings)
 {
@@ -430,6 +295,36 @@ function ping($pings)
 	return $results;
 }
 
+// Dynamic icon colors for badges
+function getRamClass($percentage)
+{
+	$ramok = $GLOBALS['settings']['ramok'];
+	$ramwarn = $GLOBALS['settings']['ramwarn'];
+
+
+	if ($percentage < $ramok) {
+		$ramClass = 'success';
+	} elseif (($percentage >= $ramok) && ($percentage < $ramwarn)) {
+		$ramClass = 'warning';
+	} else {
+		$ramClass = 'danger';
+	}
+	return$ramClass;
+}
+function getCPUClass($percentage)
+{
+	$cpuok = $GLOBALS['settings']['cpuok'];
+	$cpuwarn = $GLOBALS['settings']['cpuwarn'];
+
+	if ($percentage < $cpuok) {
+		$cpuClass = 'success';
+	} elseif (($percentage >= $cpuok) && ($percentage < $cpuwarn)) {
+		$cpuClass = 'warning';
+	} else {
+		$cpuClass = 'danger';
+	}
+	return $cpuClass;
+}
 function getPingClass($pingTime){
 	$pingok = $GLOBALS['settings']['pingok'];
 	$pingwarn = $GLOBALS['settings']['pingwarn'];

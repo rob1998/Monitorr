@@ -3,11 +3,8 @@ include(__DIR__ . '/functions.php');
 include(__DIR__ . '/auth_check.php');
 ?>
 
-<?php foreach ($services as $key => $service) { ?>
-
-	<?php
-
-	if ($service['enabled'] == "Yes") {
+<?php foreach ($services as $key => $service) {
+    	if ($service['enabled'] == "Yes") {
 
 		echo '<div class="col-lg-4">';
 

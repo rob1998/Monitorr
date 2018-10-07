@@ -48,12 +48,6 @@ https://github.com/Monitorr/Monitorr
     <title><?php echo $GLOBALS['preferences']['sitetitle']; ?></title>
 
 
-    <script>
-        $(document).ready(function () {
-            ping("192.168.178.200:8080");
-        })
-    </script>
-
     <!-- sync config with javascript -->
     <script>
         let settings = <?php echo json_encode($GLOBALS['settings']);?>;
@@ -65,6 +59,15 @@ https://github.com/Monitorr/Monitorr
         let autoUpdateOverwrite = false;
 
         refreshConfig(!autoUpdateOverwrite);
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $("#modalloadingindex").hide();
+
+            getSystemBadges();
+            ping("192.168.178.200:8080");
+        })
     </script>
 
     <!-- UI clock functions: -->
@@ -190,7 +193,7 @@ https://github.com/Monitorr/Monitorr
 
 </head>
 
-<body onload="statusCheck(), showpace()">
+<body onload="/*statusCheck(), showpace()*/">
 
 <!-- Fade-in effect: -->
 <script>
@@ -255,7 +258,48 @@ https://github.com/Monitorr/Monitorr
     <div id="right" class="Column">
 
         <div id="stats" class="container centered">
-            <!-- system badges go here -->
+
+            <div id="cpu" class="col-md-2 col-centered double-val-label">
+                <span class="">CPU</span>
+                <span class="value">%</span>
+            </div>
+
+            <div id="ram" class="col-md-2 col-centered double-val-label">
+                <span class="">RAM</span>
+                <span class="value">%</span>
+            </div>
+
+            <div id="uptime" class="col-md-2 col-centered double-val-label">
+                <span class="primary">uptime</span>
+                <span class="value"></span>
+            </div>
+
+            <div id="ping" class="col-md-2 col-centered double-val-label">
+                <span class="">ping</span>
+                <span class="value"> ms</span>
+            </div>
+
+            <div id="hd" class="col-md-2 col-centered double-val-label">
+                <span id='hdlabel1' <?php if(!isset($settings['disk1'])) echo "style='display:none'";?>>
+                    HD
+                </span>
+                <span id='hdpercent1' <?php if(!isset($settings['disk1'])) echo "style='display:none'";?>>
+                    %
+                </span>
+                <span id='hdlabel2' <?php if(!isset($settings['disk2'])) echo "style='display:none'";?>>
+                    HD
+                </span>
+                <span id='hdpercent2' <?php if(!isset($settings['disk2'])) echo "style='display:none'";?>>
+                    %
+                </span>
+                <span id='hdlabel3' <?php if(!isset($settings['disk3'])) echo "style='display:none'";?>>
+                    HD
+                </span>
+                <span id='hdpercent3' <?php if(!isset($settings['disk3'])) echo "style='display:none'";?>>
+                    %
+                </span>
+            </div>
+
         </div>
 
     </div>
@@ -273,6 +317,71 @@ https://github.com/Monitorr/Monitorr
 
     <div class="row">
         <div id="statusloop">
+            <?php
+                foreach ($services as $key => $service) {
+	                if ($service['enabled'] == "Yes") {
+
+		                echo '<div class="col-lg-4" id="service-' . $key . '-' . $service['serviceTitle'] . '">';
+
+		                if ($service['ping'] == "Enabled") {
+			                $pingTime = ping($service['checkurl']);
+
+			                $pingok = $settings['pingok'];
+			                $pingwarn = $settings['pingwarn'];
+
+			                if ($pingTime < $pingok) {
+			    	            $pingid = 'pinggreen';
+			                } elseif (($pingTime >= $pingok) && ($pingTime < $pingwarn)) {
+			    	            $pingid = 'pingyellow';
+			                } else {
+			    	            $pingid = 'pingred';
+			                }
+
+			                echo '<div id="pingindicator">';
+			                echo '<div id="' . $pingid . '" class="pingcircle" title="Ping response time: ' . $pingTime . ' ms"> </div>';
+			                echo "<script type='text/javascript'>";
+			                echo "console.log('" . $service['serviceTitle'] . " Ping time: " . $pingTime . " ms');";
+			                echo "</script>";
+			                echo '</div>';
+
+		                } else {
+
+		                }
+
+
+		                if ($service['link'] == "Yes") {
+			                echo '<a class="servicetile" href="' . $service['linkurl'] . '" target="_blank" style="display: block">';
+		                } else {
+			                echo '<div class="servicetilenolink" style="display: block; cursor: default">';
+		                }
+
+		                echo '<div id="serviceimg">';
+		                echo '<div><img id="' . strtolower($service['serviceTitle']) . '-service-img" src="assets/img/' . strtolower($service['image']) . '" class="serviceimg" alt=' . strtolower($service['serviceTitle']) . '></div>';
+		                echo '</div>';
+
+		                echo '<div id="servicetitle">';
+		                echo '<div>' . ucfirst($service['serviceTitle']) . '</div>';
+		                echo '</div>';
+
+		                echo '<div class="btnonline">Online</div>';
+
+		                if ($service['link'] == "Yes") {
+			                echo '</a>';
+		                } else {
+			                echo '</div>';
+		                }
+		                echo '</div>';
+	                } else {
+		                // Remove offline log file if disabled://
+		                $servicefile = ($service['serviceTitle']) . '.offline.json';
+		                $fileoffline = '../data/logs/' . $servicefile;
+
+		                if (is_file($fileoffline)) {
+			                rename($fileoffline, '../data/logs/offline.json.old');
+		                }
+	                }
+                }
+            ?>
             <!-- loop data goes here -->
         </div>
     </div>

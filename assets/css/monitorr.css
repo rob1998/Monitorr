@@ -566,7 +566,7 @@
         transition: all .2s ease-in-out;
     }
 
-    .servicetileoffline {
+    .servicetile.offline {
         position: absolute;
         top: 50%;
         left: 50%;
@@ -580,7 +580,7 @@
         text-shadow: 1px 1px black;
     }
 
-    .servicetilenolink {
+    .servicetile.nolink {
         position: absolute;
         top: 50%;
         left: 50%;
@@ -621,19 +621,19 @@
         filter: drop-shadow(2px 2px 2px #222);
     }
 
-    #pinggreen {
+    .pinggreen {
         background: radial-gradient(circle at .1rem .1rem, #2dff31, rgba(20, 20, 20, 0.75));
     }
 
-    #pingyellow {
+    .pingyellow {
         background: radial-gradient(circle at .1rem .1rem, yellow, rgba(20, 20, 20, 0.75));
     }
 
-    #pingred {
+    .pingred {
         background: radial-gradient(circle at .1rem .1rem, rgb(255, 48, 48), rgba(20, 20, 20, 0.75));
     }
 
-    #serviceimg {
+    .serviceimg {
         margin-bottom: 10%;
         -webkit-filter: drop-shadow(3px 3px 3px #222);
         filter: drop-shadow(3px 3px 3px #222);
@@ -643,12 +643,12 @@
         height: 5.5rem;
     }
 
-    .imgoffline {
+    .serviceimg.offline {
         -webkit-filter: grayscale(75%);
         filter: grayscale(75%);
     }
 
-    #servicetitle {
+    .servicetitle {
         display: flex;
         flex-direction: column;
         height: 2rem;
@@ -665,8 +665,8 @@
         transition: all .2s ease-in-out;
     }
 
-    #servicetitle:hover,
-    #servicetitle:focus {
+    .servicetitle:hover,
+    .servicetitle:focus {
         color: #ffffff;
         text-shadow: 0 0 20px #FF0104;
         text-decoration: none;
@@ -680,7 +680,7 @@
         transition: all .2s ease-in-out;
     }
 
-    #servicetitlenolink {
+    .servicetitle nolink {
         display: flex;
         flex-direction: column;
         height: 2rem;
@@ -697,7 +697,7 @@
         cursor: default;
     }
 
-    #servicetitleoffline {
+    .servicetitle.offline {
         display: flex;
         flex-direction: column;
         height: 2rem;
@@ -714,8 +714,8 @@
         cursor: default;
     }
 
-    #servicetitleoffline:hover,
-    #servicetitleoffline:focus {
+    .servicetitle.offline:hover,
+    .servicetitle.offline:focus {
         color: rgb(150, 150, 150);
         text-decoration: none;
         outline: 0;

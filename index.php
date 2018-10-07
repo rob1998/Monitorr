@@ -62,12 +62,6 @@ https://github.com/Monitorr/Monitorr
     </script>
 
     <script>
-        $(document).ready(function () {
-            $("#modalloadingindex").hide();
-
-            getSystemBadges();
-            ping("192.168.178.200:8080");
-        })
     </script>
 
     <!-- UI clock functions: -->
@@ -102,23 +96,13 @@ https://github.com/Monitorr/Monitorr
 
     <!-- services status update function: -->
     <script type="text/javascript">
-
-        var nIntervId2;
-        var onload;
-        //Stop service status update when refresh toggle is disabled:
-
         $(document).ready(function () {
             $(":checkbox").change(function () {
-
                 if ($(this).is(':checked')) {
-                    nIntervId2 = setInterval(statusCheck, settings.rfsysinfo);
-                }
-                else {
-                    clearInterval(nIntervId2);
+                    statusCheck();
                 }
             });
         });
-
     </script>
 
     <!-- marquee offline function: -->
@@ -193,7 +177,7 @@ https://github.com/Monitorr/Monitorr
 
 </head>
 
-<body onload="/*statusCheck(), showpace()*/">
+<body onload="statusCheck(true), showpace()">
 
 <!-- Fade-in effect: -->
 <script>
@@ -321,49 +305,27 @@ https://github.com/Monitorr/Monitorr
                 foreach ($services as $key => $service) {
 	                if ($service['enabled'] == "Yes") {
 
-		                echo '<div class="col-lg-4" id="service-' . $key . '-' . $service['serviceTitle'] . '">';
+		                echo '<div class="col-lg-4" id="service-' . $service['serviceTitle'] . '">';
 
-		                if ($service['ping'] == "Enabled") {
-			                $pingTime = ping($service['checkurl']);
-
-			                $pingok = $settings['pingok'];
-			                $pingwarn = $settings['pingwarn'];
-
-			                if ($pingTime < $pingok) {
-			    	            $pingid = 'pinggreen';
-			                } elseif (($pingTime >= $pingok) && ($pingTime < $pingwarn)) {
-			    	            $pingid = 'pingyellow';
-			                } else {
-			    	            $pingid = 'pingred';
-			                }
-
-			                echo '<div id="pingindicator">';
-			                echo '<div id="' . $pingid . '" class="pingcircle" title="Ping response time: ' . $pingTime . ' ms"> </div>';
-			                echo "<script type='text/javascript'>";
-			                echo "console.log('" . $service['serviceTitle'] . " Ping time: " . $pingTime . " ms');";
-			                echo "</script>";
-			                echo '</div>';
-
-		                } else {
-
-		                }
-
+		                $styleProp = "";
+		                if ($service['ping'] == "Enabled") $styleProp = "style='display:none;'";
+		                echo '<div id="pingindicator-' . $service['serviceTitle'] . '" ' . $styleProp . '>';
+		                echo '<div class="pingcircle"></div>';
+		                echo '</div>';
 
 		                if ($service['link'] == "Yes") {
 			                echo '<a class="servicetile" href="' . $service['linkurl'] . '" target="_blank" style="display: block">';
 		                } else {
-			                echo '<div class="servicetilenolink" style="display: block; cursor: default">';
+			                echo '<div class="servicetile nolink" style="display: block; cursor: default">';
 		                }
 
-		                echo '<div id="serviceimg">';
-		                echo '<div><img id="' . strtolower($service['serviceTitle']) . '-service-img" src="assets/img/' . strtolower($service['image']) . '" class="serviceimg" alt=' . strtolower($service['serviceTitle']) . '></div>';
-		                echo '</div>';
+		                echo '<img id="' . strtolower($service['serviceTitle']) . '-service-img" src="assets/img/' . strtolower($service['image']) . '" class="serviceimg" alt=' . strtolower($service['serviceTitle']) . '>';
 
-		                echo '<div id="servicetitle">';
+		                echo '<div class="servicetitle">';
 		                echo '<div>' . ucfirst($service['serviceTitle']) . '</div>';
 		                echo '</div>';
 
-		                echo '<div class="btnonline">Online</div>';
+		                echo '<div id="status-' . $service['serviceTitle'] . '">Loading</div>';
 
 		                if ($service['link'] == "Yes") {
 			                echo '</a>';

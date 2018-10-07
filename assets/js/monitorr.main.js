@@ -1,29 +1,110 @@
-function ping(url) {
+
+
+function statusCheck(override) {
+
+    if ($("#buttonStart input:checkbox").is(':checked') || override) {
+        $("#modalloadingindex").fadeIn("slow");
+        console.log('Service check START | Interval: ' + settings.rfsysinfo + ' ms');
+
+        getSystemBadges();
+        checkServices();
+
+        $("#modalloadingindex").fadeOut("slow");
+
+        setTimeout(statusCheck, settings.rfsysinfo);
+    }
+
+}
+
+function checkServices() {
+    for(let i = 0; i<services.length; i++) {
+        let $service = services[i];
+        let $serviceDiv = $('#service-' + $service.serviceTitle);
+
+        if ( $serviceDiv.length){
+            if($service.ping == "Enabled") {
+                $("#pingindicator-"+$service.serviceTitle).show();
+                ping($service);
+            } else {
+                $("#pingindicator-"+$service.serviceTitle).hide();
+            }
+        } else {
+
+        }
+    }
+
+    //TODO: cleanup services that no longer exist or have different names
+}
+
+function ping(service) {
     $.ajax({
         type: "POST",
         url: "api/?v1/getPing",
-        data: {'url': url},
+        data: {'url': service.checkurl},
         dataType: "json",
-        success: function(data){
-            console.log(data);
+        success: function(response){
+
+            let $pingTime = response.data;
+            let $serviceElement = $("#service-" + service.serviceTitle);
+            let $pingClassElement = $("#pingindicator-" + service.serviceTitle + " > div");
+            let $btnStatus = $("#status-" + service.serviceTitle);
+
+            if(!$pingTime){
+
+                $pingClassElement.removeClass("pinggreen");
+                $pingClassElement.removeClass("pingyellow");
+                $pingClassElement.removeClass("pingred");
+                $pingClassElement.addClass("pingred");
+
+                $pingClassElement.prop('title', "Ping response time: unresponsive");
+
+                $btnStatus.removeClass("btnonline");
+                $btnStatus.addClass("btnoffline");
+                $btnStatus.text("Offline");
+
+                $serviceElement.find(".servicetile").addClass("offline");
+                $serviceElement.find(".servicetitle").addClass("offline");
+                $serviceElement.find(".serviceimg").addClass("offline");
+
+            } else {
+
+                let $pingok = settings.pingok;
+                let $pingwarn = settings.pingwarn;
+                let $pingClass;
+
+                if ($pingTime < $pingok) {
+                    $pingClass = 'pinggreen';
+                } else if (($pingTime >= $pingok) && ($pingTime < $pingwarn)) {
+                    $pingClass = 'pingyellow';
+                } else {
+                    $pingClass = 'pingred';
+                }
+
+                $pingClassElement.removeClass("pinggreen");
+                $pingClassElement.removeClass("pingyellow");
+                $pingClassElement.removeClass("pingred");
+                $pingClassElement.addClass($pingClass);
+
+                $pingClassElement.prop('title', "Ping response time: " + $pingTime + " ms");
+
+                $btnStatus.removeClass("btnoffline");
+                $btnStatus.addClass("btnonline");
+                $btnStatus.text("Online");
+
+                $serviceElement.find(".servicetile").removeClass("offline");
+                $serviceElement.find(".servicetitle").removeClass("offline");
+                $serviceElement.find(".serviceimg").removeClass("offline");
+
+            }
         }
     });
-    setTimeout(ping, 15000, url);
 }
 
-function statusCheck() {
-    for(let i = 0; i<services.length; i++) {
-
-    }
-    console.log('Service check START | Interval: ' + settings.rfsysinfo + ' ms');
-    $("#statusloop").load('assets/php/loop.php');
-}
 function showpace() {
     $('.pace-activity').addClass('showpace');
 }
 
 function getSystemBadges() {
-    console.log('Updating system badges | Interval: ' + settings.rfsysinfo + ' ms');
     $.ajax({
         url: "api/?v1/getSystemBadges",
         type: "GET",
@@ -151,7 +232,6 @@ function getSystemBadges() {
             //</editor-fold>
         }
     });
-    setTimeout(getSystemBadges, settings.rfsysinfo);
 }
 
 function refreshConfig(updateServices) {

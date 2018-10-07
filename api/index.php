@@ -1,7 +1,7 @@
 <?php
 $generationTime = -microtime(true);
 //include functions
-require_once 'functions.php';
+require_once(__DIR__ . '/../assets/php/functions.php');
 //Set result array
 $result = array();
 //Get request method

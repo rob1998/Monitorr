@@ -47,6 +47,13 @@ https://github.com/Monitorr/Monitorr
 
     <title><?php echo $GLOBALS['preferences']['sitetitle']; ?></title>
 
+
+    <script>
+        $(document).ready(function () {
+            ping("192.168.178.200:8080");
+        })
+    </script>
+
     <!-- sync config with javascript -->
     <script>
         let settings = <?php echo json_encode($GLOBALS['settings']);?>;

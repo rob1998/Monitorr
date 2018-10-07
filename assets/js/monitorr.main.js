@@ -1,3 +1,16 @@
+function ping(url) {
+    $.ajax({
+        type: "POST",
+        url: "assets/php/api.php?v1/getPing",
+        data: {'url': url},
+        dataType: "json",
+        success: function(data){
+            console.log(data);
+        }
+    });
+    setTimeout(ping, 15000, url);
+}
+
 function statusCheck() {
     console.log('Service check START | Interval: ' + settings.rfsysinfo + ' ms');
     $("#stats").load('assets/php/systembadges.php');

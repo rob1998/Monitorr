@@ -1,4 +1,5 @@
 <?php
+//<editor-fold desc="setup">
 $generationTime = -microtime(true);
 //include functions
 require_once(__DIR__ . '/../assets/php/functions.php');
@@ -16,6 +17,9 @@ if ($function === false) {
 }
 $result['request'] = key($_GET);
 $result['params'] = $_POST;
+//</editor-fold>
+
+//<editor-fold desc="API functions">
 switch ($function) {
 	case 'v1_getPing':
 		switch ($method) {
@@ -60,6 +64,9 @@ switch ($function) {
 		$result['statusText'] = 'function requested is not defined';
 		break;
 }
+//</editor-fold>
+
+//<editor-fold desc="result formatting">
 //Set Default Result
 if (!$result) {
 	$result['status'] = "error";
@@ -74,3 +81,4 @@ if ($pretty) {
 } else {
 	exit(json_encode($result, JSON_HEX_QUOT | JSON_HEX_TAG));
 }
+//</editor-fold>

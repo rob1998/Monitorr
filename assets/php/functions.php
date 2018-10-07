@@ -257,6 +257,7 @@ function ping($pings)
 		case "array":
 			$results = [];
 			foreach ($pings as $k => $v) {
+				$v = url_to_domain($v);
 				if (strpos($v, ':') !== false) {
 					$domain = explode(':', $v)[0];
 					$port = explode(':', $v)[1];
@@ -275,6 +276,7 @@ function ping($pings)
 			}
 			break;
 		case "string":
+			$pings = url_to_domain($pings);
 			if (strpos($pings, ':') !== false) {
 				$domain = explode(':', $pings)[0];
 				$port = explode(':', $pings)[1];
@@ -390,4 +392,14 @@ function configExists()
 {
 	return is_file($GLOBALS['config_file']);
 }
-?>
+
+function url_to_domain($url) {
+	$host = parse_url($url, PHP_URL_HOST);
+	$port = parse_url($url, PHP_URL_PORT);
+	$path = parse_url($url, PHP_URL_PATH);
+
+	$result = $host;
+	$result .= empty($port) ? "" : ":" . $port;
+	$result .=  rtrim($path, '/');;
+	return $result;
+}

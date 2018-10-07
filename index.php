@@ -54,14 +54,6 @@ https://github.com/Monitorr/Monitorr
         let preferences = <?php echo json_encode($GLOBALS['preferences']);?>;
         let services = <?php echo json_encode($GLOBALS['services']);?>;
         let current_rflog = settings.rflog;
-        let nIntervId = [];
-        let logInterval = false;
-        let autoUpdateOverwrite = false;
-
-        refreshConfig(!autoUpdateOverwrite);
-    </script>
-
-    <script>
     </script>
 
     <!-- UI clock functions: -->
@@ -84,11 +76,6 @@ https://github.com/Monitorr/Monitorr
         let timeStandard = <?php echo $timeStandard;?>;
         let timeZone = "<?php echo $timezone_suffix;?>";
         let rftime = <?php echo $GLOBALS['settings']['rftime'];?>;
-
-        $(document).ready(function () {
-            setTimeout(syncServerTime(), settings.rftime); //delay is rftime
-            updateTime();
-        });
     </script>
 
     <script src="assets/js/clock.js"></script>
@@ -177,15 +164,8 @@ https://github.com/Monitorr/Monitorr
 
 </head>
 
-<body onload="showpace()">
+<body onload="showpace()" class="fade-out">
 
-<!-- Fade-in effect: -->
-<script>
-    document.body.className += ' fade-out';
-    $(function () {
-        $('body').removeClass('fade-out');
-    });
-</script>
 
 <!-- Append marquee alert if service is down: -->
 <div id="summary"></div>
@@ -306,18 +286,18 @@ https://github.com/Monitorr/Monitorr
                 foreach ($services as $key => $service) {
 	                if ($service['enabled'] == "Yes") {
                         ?>
-		                <div id="service-<?php echo $service['serviceTitle'];?>"  class="col-lg-4" >
-                            <div id="pingindicator-<?php echo $service['serviceTitle']?>">
+		                <div id="service-<?php echo str_replace(" ", "-", $service['serviceTitle']);?>"  class="col-lg-4" >
+                            <div id="pingindicator-<?php echo str_replace(" ", "-", $service['serviceTitle'])?>" class="pingindicator">
                                 <div class="pingcircle"></div>
                             </div>
 
                             <div class="servicetile <?php if ($service['link'] == "No") echo "nolink";?>" data-location="<?php echo $service['linkurl'];?>" style="display: block">
 
-                                <img id="<?php echo strtolower($service['serviceTitle']);?>-service-img" src="assets/img/<?php echo strtolower($service['image']);?>" class="serviceimg" alt='<?php echo strtolower($service['serviceTitle']);?>'>
+                                <img id="<?php echo str_replace(" ", "-", $service['serviceTitle']);?>-service-img" src="assets/img/<?php echo $service['image'];?>" class="serviceimg" alt='<?php echo str_replace(" ", "-", $service['serviceTitle']);?>'>
                                 <div class="servicetitle">
-                                    <?php echo ucfirst($service['serviceTitle']);?>
+                                    <?php echo $service['serviceTitle'];?>
                                 </div>
-                                <div id="status-<?php echo $service['serviceTitle'];?>">Loading</div>
+                                <div id="status-<?php echo str_replace(" ", "-", $service['serviceTitle']);?>">Loading</div>
                             </div>
                         </div>
                     <?php

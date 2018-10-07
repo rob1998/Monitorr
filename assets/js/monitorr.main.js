@@ -1,4 +1,24 @@
+let nIntervId = [];
+let logInterval = false;
+let autoUpdateOverwrite = false;
 
+$(function () {
+    //fade-in effect
+    $('body').removeClass('fade-out');
+
+    //open service link in new tab
+    $('.servicetile').on("click", function () {
+        if(!$(this).hasClass("nolink")) {
+            let win = window.open($(this).data("location"), '_blank');
+            win.focus();
+        }
+    });
+
+    refreshConfig(true);
+
+    setTimeout(syncServerTime(), settings.rftime); //delay is rftime
+    updateTime();
+});
 
 function statusCheck(override) {
 
@@ -15,14 +35,14 @@ function checkServices() {
     let titleArray = [];
     for(let i = 0; i<services.length; i++) {
         let $service = services[i];
-        let $serviceDiv = $('#service-' + $service.serviceTitle);
+        let $serviceDiv = $('#service-' + $service.serviceTitle.replace(/ /g, "-"));
 
         if ( $serviceDiv.length){
             ping($service);
         } else {
             let html = "";
-            html += "<div id=\"service-" + $service.serviceTitle + "\"  class=\"col-lg-4\" >";
-            html += "   <div id=\"pingindicator-" + $service.serviceTitle + "\" >";
+            html += "<div id=\"service-" + $service.serviceTitle.replace(/ /g, "-") + "\"  class=\"col-lg-4\" >";
+            html += "   <div id=\"pingindicator-" + $service.serviceTitle.replace(/ /g, "-") + "\" class='pingindicator' >";
             html += "       <div class=\"pingcircle\"></div>";
             html += "   </div>";
             if($service.link == "Yes"){
@@ -30,11 +50,11 @@ function checkServices() {
             } else {
                 html += "   <div class=\"servicetile nolink\" data-location=\"" + $service.linkurl + "\" style=\"display: block\">";
             }
-            html += "       <img id=\"" + $service.serviceTitle + "-service-img\" src=\"assets/img/" + $service.image.toLowerCase() + "\" class=\"serviceimg\" alt='" + $service.serviceTitle + "'>";
+            html += "       <img id=\"" + $service.serviceTitle.replace(/ /g, "-") + "-service-img\" src=\"assets/img/" + $service.image + "\" class=\"serviceimg\" alt='" + $service.serviceTitle + "'>";
             html += "       <div class=\"servicetitle\">";
             html +=             $service.serviceTitle;
             html += "       </div>";
-            html += "       <div id=\"status-" + $service.serviceTitle + "\">Loading</div>";
+            html += "       <div id=\"status-" + $service.serviceTitle.replace(/ /g, "-") + "\">Loading</div>";
             html += "   </div>";
             html += "</div>";
             $("#statusloop").append(html);
@@ -44,7 +64,14 @@ function checkServices() {
     }
 
     $("#statusloop > div").each(function () {
-        let title = $(this).prop("id").split("-")[1];
+        let split = $(this).prop("id").split("-");
+        let title;
+        if(split.length>2){
+            split.shift();
+            title = split.join(" ");
+        } else {
+            title = split[1];
+        }
         if($.inArray(title, titleArray) == -1) $(this).remove();
     });
 }
@@ -58,9 +85,9 @@ function ping(service) {
         success: function(response){
 
             let $pingTime = response.data;
-            let $serviceElement = $("#service-" + service.serviceTitle);
-            let $pingClassElement = $("#pingindicator-" + service.serviceTitle + " > div");
-            let $btnStatus = $("#status-" + service.serviceTitle);
+            let $serviceElement = $("#service-" + service.serviceTitle.replace(/ /g, "-"));
+            let $pingClassElement = $("#pingindicator-" + service.serviceTitle.replace(/ /g, "-") + " > div");
+            let $btnStatus = $("#status-" + service.serviceTitle.replace(/ /g, "-"));
 
             if(!$pingTime){
 

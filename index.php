@@ -178,7 +178,7 @@ https://github.com/Monitorr/Monitorr
 
 </div>
 
-<div id="header">
+<div class="header">
 
     <div id="left" class="Column">
         <div id="clock">
@@ -188,7 +188,7 @@ https://github.com/Monitorr/Monitorr
         </div>
     </div>
 
-    <div id="center">
+    <div id="logo" class="Column">
 
         <div id="centertext">
             <a class="navbar-brand" href="

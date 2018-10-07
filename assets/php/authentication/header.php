@@ -13,6 +13,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="manifest" href="webmanifest.json">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
+    <link rel="apple-touch-icon" href="favicon.ico">
 
     <meta name="Monitorr" content="Monitorr: Self-hosted, single-page, log consolidation tool."/>
 
@@ -20,29 +22,6 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
     <link rel="stylesheet" href="assets/css/monitorr.css"/>
     <link rel="stylesheet" href="assets/data/custom.css"/>
-
-    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="assets/images/favicon/apple-touch-icon-57x57.png"/>
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/images/favicon/apple-touch-icon-114x114.png"/>
-    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/images/favicon/apple-touch-icon-72x72.png"/>
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/images/favicon/apple-touch-icon-144x144.png"/>
-    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="assets/images/favicon/apple-touch-icon-60x60.png"/>
-    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="assets/images/favicon/apple-touch-icon-120x120.png"/>
-    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="assets/images/favicon/apple-touch-icon-76x76.png"/>
-    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="assets/images/favicon/apple-touch-icon-152x152.png"/>
-    <link rel="icon" type="image/png" href="assets/images/favicon/favicon-196x196.png" sizes="196x196"/>
-    <link rel="icon" type="image/png" href="assets/images/favicon/favicon-96x96.png" sizes="96x96"/>
-    <link rel="icon" type="image/png" href="assets/images/favicon/favicon-32x32.png" sizes="32x32"/>
-    <link rel="icon" type="image/png" href="assets/images/favicon/favicon-16x16.png" sizes="16x16"/>
-    <link rel="icon" type="image/png" href="assets/images/favicon/favicon-128.png" sizes="128x128"/>
-    <meta name="application-name" content="Monitorr"/>
-    <meta name="msapplication-TileColor" content="#FFFFFF"/>
-    <meta name="msapplication-TileImage" content="assets/images/favicon/mstile-144x144.png"/>
-    <meta name="msapplication-square70x70logo" content="assets/images/favicon/mstile-70x70.png"/>
-    <meta name="msapplication-square150x150logo" content="assets/images/favicon/mstile-150x150.png"/>
-    <meta name="msapplication-wide310x150logo" content="assets/images/favicon/mstile-310x150.png"/>
-    <meta name="msapplication-square310x310logo" content="assets/images/favicon/mstile-310x310.png"/>
-    <meta name="theme-color" content="#252525"/>
-    <meta name="theme_color" content="#252525"/>
 
     <meta name="robots" content="NOINDEX, NOFOLLOW">
 
@@ -61,12 +40,11 @@
 
     <!-- sync config with javascript -->
     <script>
-        var settings = <?php echo json_encode($GLOBALS['settings']);?>;
-        var preferences = <?php echo json_encode($GLOBALS['preferences']);?>;
-
-        refreshConfig();
+        let settings = <?php echo json_encode($GLOBALS['settings']);?>;
+        let preferences = <?php echo json_encode($GLOBALS['preferences']);?>;
+        let services = <?php echo json_encode($GLOBALS['services']);?>;
+        let current_rflog = settings.rflog;
     </script>
-
 
     <!-- UI clock functions: -->
     <script>
@@ -84,15 +62,10 @@
 		}
 		$serverTime = $dt->format("D d M Y H:i:s");
 		?>
-        var servertime = "<?php echo $serverTime;?>";
-        var timeStandard = <?php echo $timeStandard;?>;
-        var timeZone = "<?php echo $timezone_suffix;?>";
-        var rftime = <?php echo $GLOBALS['settings']['rftime'];?>;
-
-        $(document).ready(function () {
-            setTimeout(syncServerTime(), settings.rftime); //delay is rftime
-            updateTime();
-        });
+        let serverTime = "<?php echo $serverTime;?>";
+        let timeStandard = <?php echo $timeStandard;?>;
+        let timeZone = "<?php echo $timezone_suffix;?>";
+        let rftime = <?php echo $GLOBALS['settings']['rftime'];?>;
     </script>
 
     <script src="assets/js/clock.js"></script>
@@ -107,10 +80,6 @@
 
     <div id="left" class="Column">
 
-        <div id="logoHeader" class="Column">
-            <img src="assets/images/logo_white_glow_crop.png" alt="Monitorr" title="Reload Monitorr" onclick="window.location.reload(true);">
-        </div>
-
         <div id="clock">
             <canvas id="canvas" width="120" height="120"></canvas>
             <div class="dtg" id="timer"></div>
@@ -121,7 +90,7 @@
     <!-- CHANGE ME // REMOVE "ON CLICK"? -->
 
     <div id="logo" class="Column">
-        <img src="assets/images/monitorr_white_text_crop.png" alt="Monitorr" title="Reload Monitorr" onclick="window.location.reload(true);">
+        <img src="assets/img/monitorr.png" alt="Monitorr" title="Reload Monitorr" onclick="window.location.reload(true);">
     </div>
 
     <div id="right" class="Column">

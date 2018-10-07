@@ -35,32 +35,20 @@ https://github.com/Monitorr/Monitorr
     <!-- <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script> -->
 
 
+
     <!-- sync config with javascript -->
     <script>
         let settings = <?php echo json_encode($GLOBALS['settings']);?>;
         let preferences = <?php echo json_encode($GLOBALS['preferences']);?>;
-        refreshConfig(false);
+        let services = <?php echo json_encode($GLOBALS['services']);?>;
+        let current_rflog = settings.rflog;
     </script>
 
-	<?php
-	if ($GLOBALS['preferences']['timezone'] == "") {
-
-		date_default_timezone_set('UTC');
-		$timezone = date_default_timezone_get();
-
-	} else {
-
-		$timezoneconfig = $GLOBALS['preferences']['timezone'];
-		date_default_timezone_set($timezoneconfig);
-		$timezone = date_default_timezone_get();
-
-	}
-	?>
-
+    <!-- UI clock functions: -->
     <script>
 		<?php
 		//initial values for clock:
-		//$timezone = $preferences['timezone'];
+		$timezone = $GLOBALS['preferences']['timezone'];
 		$dt = new DateTime("now", new DateTimeZone("$timezone"));
 		$timeStandard = (int)($GLOBALS['preferences']['timestandard']);
 		$rftime = $GLOBALS['settings']['rftime'];
@@ -72,15 +60,10 @@ https://github.com/Monitorr/Monitorr
 		}
 		$serverTime = $dt->format("D d M Y H:i:s");
 		?>
-        let servertime = "<?php echo $serverTime;?>";
+        let serverTime = "<?php echo $serverTime;?>";
         let timeStandard = <?php echo $timeStandard;?>;
         let timeZone = "<?php echo $timezone_suffix;?>";
-        let rftime = <?php echo $settings['rftime'];?>;
-
-        $(document).ready(function () {
-            setTimeout(syncServerTime(), settings.rftime); //delay is rftime
-            updateTime();
-        });
+        let rftime = <?php echo $GLOBALS['settings']['rftime'];?>;
     </script>
 
     <title>
@@ -129,10 +112,6 @@ https://github.com/Monitorr/Monitorr
 
 <div id="settingscolumn" class="settingscolumn">
 
-    <div id="logoHeaderSettings">
-        <img src="assets/images/logo_white_glow_crop.png" alt="Monitorr" title="Reload Monitorr" onclick="window.location.reload(true);">
-    </div>
-
     <div id="settingsbrand">
         <div class="navbar-brand">
 			<?php
@@ -174,7 +153,7 @@ https://github.com/Monitorr/Monitorr
                     <a href="#monitorr-authentication" onclick="load_authentication()"><i class="fa fa-fw fa-lock"></i>Authentication</a>
                 </li>
                 <li class="sidebar-nav-item" data-item="services-configuration">
-                    <a href="#services-configuration" onclick="load_services()"><i class="fa fa-fw fa-book"></i>Log Configuration</a>
+                    <a href="#services-configuration" onclick="load_services()"><i class="fa fa-fw fa-book"></i>Services Configuration</a>
                 </li>
                 <li class="sidebar-nav-item" data-item="registration">
                     <a href="#registration" onclick="load_registration()"><i class="fas fa-user-plus"></i>Registration</a>

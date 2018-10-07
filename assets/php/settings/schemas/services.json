@@ -31,24 +31,12 @@
 				"type": "string",
 				"title": "Check Type:",
 				"enum": [
-					" Standard",
-					" Ping Only"
+					"Standard",
+					"Ping Only"
 				],
 				"required": true,
 				"pattern": {},
 				"default": " Standard",
-				"properties": {}
-			},
-			"ping": {
-				"type": "string",
-				"title": "ping",
-				"enum": [
-					"Enabled",
-					"Disabled"
-				],
-				"required": true,
-				"pattern": {},
-				"default": "Disabled",
 				"properties": {}
 			},
 			"link": {
@@ -68,11 +56,11 @@
 				"type": "string",
 				"title": "Check URL",
 				"format": "uri",
-				"default": "http://localhost:80"
+				"default": "localhost:80"
 			},
 			"linkurl": {
 				"required": true,
-				"type": "string",
+				"type": "url",
 				"title": "Link URL",
 				"format": "uri",
 				"default": "http://localhost:80"

@@ -30,6 +30,30 @@ switch ($function) {
 				break;
 		}
 		break;
+	case 'v1_getSystemBadges':
+		switch ($method) {
+			case 'GET':
+				$result['status'] = 'success';
+				$result['statusText'] = 'success';
+				$ping = ping($settings['pinghost'] . ":" . $settings['pingport']);
+				if(!$ping) $ping = "?";
+
+				$result['data'] = array(
+					"serverLoad" => getServerLoad(),
+					"ramPercentage" => getRamPercentage(),
+					"totalUptime" => getTotalUptime(),
+					"pingTime" => $ping,
+					"disk1Usage" => (isset($settings['disk1']) ? getHDFree("disk1") : "?"),
+					"disk2Usage" => (isset($settings['disk2']) ? getHDFree("disk2") : "?"),
+					"disk3Usage" => (isset($settings['disk3']) ? getHDFree("disk3") : "?"),
+				);
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
 	default:
 		//No Function Available
 		$result['status'] = 'error';

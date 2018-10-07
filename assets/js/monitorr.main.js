@@ -25,10 +25,10 @@ function showpace() {
 function getSystemBadges() {
     console.log('Updating system badges | Interval: ' + settings.rfsysinfo + ' ms');
     $.ajax({
-        url: "assets/php/systembadges.php",
+        url: "api/?v1/getSystemBadges",
         type: "GET",
         success: function (response) {
-            let data = JSON.parse(response);
+            let data = JSON.parse(response).data;
 
             //<editor-fold desc="values">
             $("#cpu > .value").text(data.serverLoad + "%");

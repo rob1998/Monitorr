@@ -1,0 +1,18 @@
+{
+  "image": "organizr_logo.png",
+  "page": "index.php",
+  "settings": {
+    "enabled": {
+      "type": "checkbox",
+      "default": false
+    },
+    "organizrURL": {
+      "type": "text",
+      "default": ""
+    },
+    "organizrAPI": {
+      "type": "text",
+      "default": ""
+    }
+  }
+}

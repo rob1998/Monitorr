@@ -2,6 +2,12 @@
   "type": "object",
   "required": false,
   "properties": {
+    "apikey": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "properties": {}
+    },
     "registrationEnabled": {
       "type": "string",
       "enum": [

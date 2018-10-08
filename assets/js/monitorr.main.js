@@ -20,6 +20,34 @@ $(function () {
     updateTime();
 });
 
+function createPluginList(element){
+    $.ajax({
+        type: "GET",
+        url: "/api/?v1/getPlugins",
+        dataType: "json",
+        success: function(response){
+            if(response.data.length == 0){
+                $(element).html("No plugins found");
+            } else {
+                let $html = "";
+                for(let i = 0; i<response.data.length; i++) {
+                    let $plugin = response.data[i];
+                    let $imgUrl = "assets/plugins/" + $plugin.name + "/" + $plugin.image;
+                    $html += "<div class='plugin-box'>";
+                    $html +=    "<img src='" + $imgUrl + "'>";
+                    $html +=    "<h3>" + $plugin.name + "</h3>";
+                    $html +=    "<div class='plugin-box-overlay'>";
+                    $html +=        "<a class='btn'><i class='icon'></i></a>";
+                    $html +=        "<a class='btn'><i class='icon'></i></a>";
+                    $html +=    "</div>";
+                    $html += "</div>";
+                }
+                $(element).html($html);
+            }
+        }
+    });
+}
+
 function statusCheck(override) {
 
     if ($("#buttonStart input:checkbox").is(':checked') || override) {
@@ -441,4 +469,11 @@ function load_registration() {
     document.getElementById("includedContent").innerHTML = '<object type="text/html" class="object" data="assets/php/settings/registration.php" ></object>';
     $(".sidebar-nav-item").removeClass('active');
     $("li[data-item='registration']").addClass("active");
+}
+
+function load_plugins() {
+    document.getElementById("setttings-page-title").innerHTML = 'Plugins';
+    createPluginList("#includedContent");
+    $(".sidebar-nav-item").removeClass('active');
+    $("li[data-item='plugins']").addClass("active");
 }

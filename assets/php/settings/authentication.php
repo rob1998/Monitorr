@@ -85,8 +85,9 @@ include('../functions.php');
                     "layout": {
                         "template": './templates/two-column-layout-template-authentication.html',
                         "bindings": {
+                            "apikey": "leftcolumn",
                             "registrationEnabled": "leftcolumn",
-                            "settingsEnabled": "leftcolumn",
+                            "settingsEnabled": "rightcolumn",
                             "logsEnabled": "rightcolumn"
                         }
                     }
@@ -101,6 +102,34 @@ include('../functions.php');
                     "collapsible": false,
                     "legendStyle": "button",
                     "fields": {
+                        "apikey": {
+                            "type": "text",
+                            "validate": true,
+                            "showMessages": true,
+                            "disabled": false,
+                            "hidden": false,
+                            "label": "API Key:",
+                            "hideInitValidationError": false,
+                            "focus": false,
+                            "optionLabels": [],
+                            "name": "apikey",
+                            "placeholder": "Generate your own API Key and insert it here",
+                            "typeahead": {},
+                            "size": "7",
+                            "allowOptionalEmpty": false,
+                            "data": {},
+                            "autocomplete": false,
+                            "disallowEmptySpaces": true,
+                            "disallowOnlyEmptySpaces": true,
+                            "fields": {},
+                            "renderButtons": true,
+                            "attributes": {},
+                            "events": {
+                                "change": function() {
+                                    $('.alpaca-form-button-submit').addClass('buttonchange');
+                                }
+                            }
+                        },
                         "registrationEnabled": {
                             "type": "radio",
                             "validate": true,

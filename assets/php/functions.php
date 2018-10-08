@@ -16,17 +16,103 @@ if (!is_file(__DIR__ . '../../data/datadir.json')
 $datadir_json = json_decode(file_get_contents(__DIR__ . '../../data/datadir.json'), 1);
 $datadir = $datadir_json['datadir'];
 
-
+//easy settings variables
 $config_file = $datadir . '/config.json';
-$preferences = json_decode(file_get_contents($config_file), 1)['preferences'];
-$settings = json_decode(file_get_contents($config_file), 1)['settings'];
-$services = json_decode(file_get_contents($config_file), 1)['services'];
-$authentication = json_decode(file_get_contents($config_file), 1)['authentication'];
+$configJSON = file_get_contents($config_file);
+$preferences = json_decode($configJSON, 1)['preferences'];
+$settings = json_decode($configJSON, 1)['settings'];
+$services = json_decode($configJSON, 1)['services'];
+$authentication = json_decode($configJSON, 1)['authentication'];
+
+//authentication
 $monitorrAPI = $authentication['apikey'];
 session_start();
 
 function checkAuthorization(){
     return ((!empty($_SESSION['user_name']) && ($_SESSION['user_is_logged_in'])) || (isset($_GET['apikey']) && ($_GET['apikey'] == $GLOBALS['monitorrAPI'])));
+}
+
+function createFormInput($name, $value, $type, $options, $extraClass) {
+	$result = "";
+	$result .= "<label>$name: </label>";
+	switch ($type) {
+		case "checkbox":
+		case "color":
+		case "date":
+		case "datetime":
+		case "datetimelocal":
+		case "email":
+		case "fileupload":
+		case "hidden":
+		case "image":
+		case "month":
+		case "number":
+		case "password":
+		case "range":
+		case "radio":
+		case "reset":
+		case "search":
+		case "submit":
+		case "text":
+		case "time":
+		case "url":
+		case "week":
+			$result .= "<input class='$name-input $extraClass' name='$name' type='$type' value='$value'>";
+			break;
+		case "select":
+			$result .= "<select class='$name-input $extraClass' name='$name' value='$value'>";
+			foreach ($options as $option) {
+				$result .= "<option value='$option'>$option</option>";
+			}
+			$result .= "</select>";
+			break;
+		default:
+			break;
+	}
+	return $result;
+}
+
+function createPluginSettingsForm($plugin){
+	$result = "";
+
+	$infoFilePath = __DIR__ . "/../plugins/" . $plugin . "/info.json";
+	if(is_file($infoFilePath)) {
+		$pluginInfo = json_decode(file_get_contents($infoFilePath), true);
+		$pluginSettings = (isset($GLOBALS['configJSON']['plugins'][$plugin]) && isset($pluginInfo['settings'])) ? $GLOBALS['configJSON']['plugins'][$plugin] : array();
+
+		$result .= "<form id='$plugin-settings'>";
+		foreach ($pluginInfo['settings'] as $settingName => $settingsProperties) {
+			$result .= "<div class='form-group'>";
+
+			if(!isset($pluginSettings[$settingName])) {
+				$pluginSettings[$settingName] = $settingsProperties['default'];
+			}
+
+			$options = isset($settingsProperties['options']) ? $settingsProperties['options'] : "";
+			$result .= createFormInput($settingName, $pluginSettings[$settingName], $settingsProperties['type'], $options, "");
+
+			$result .= "</div>";
+		}
+		$result .= "</form>";
+
+	} else {
+		$result = "ERROR: no info file found for plugin '$plugin'";
+	}
+	return $result;
+}
+
+function getPlugins(){
+	$result = array();
+	$plugins = scandir(__DIR__ . "/../plugins");
+	foreach ($plugins as $pluginFolder) {
+		$infoFilePath = __DIR__ . "/../plugins/" . $pluginFolder . "/info.json";
+		if(is_file($infoFilePath)) {
+			$pluginInfo = json_decode(file_get_contents($infoFilePath), true);
+			$pluginInfo['name'] = $pluginFolder;
+			$result[] = $pluginInfo;
+		}
+	}
+	return $result;
 }
 
 // get CPUload function

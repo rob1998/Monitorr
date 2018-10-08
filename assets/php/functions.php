@@ -22,7 +22,12 @@ $preferences = json_decode(file_get_contents($config_file), 1)['preferences'];
 $settings = json_decode(file_get_contents($config_file), 1)['settings'];
 $services = json_decode(file_get_contents($config_file), 1)['services'];
 $authentication = json_decode(file_get_contents($config_file), 1)['authentication'];
+$monitorrAPI = $authentication['apikey'];
+session_start();
 
+function checkAuthorization(){
+    return ((!empty($_SESSION['user_name']) && ($_SESSION['user_is_logged_in'])) || (isset($_GET['apikey']) && ($_GET['apikey'] == $GLOBALS['monitorrAPI'])));
+}
 
 // get CPUload function
 function _getServerLoadLinuxData()

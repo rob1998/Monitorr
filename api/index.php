@@ -8,7 +8,6 @@ $result = array();
 //Get request method
 $method = $_SERVER['REQUEST_METHOD'];
 $pretty = isset($_GET['pretty']) ? true : false;
-$api_key = isset($_GET['api_key']) ? $_GET['api_key'] : "";
 $function = (key($_GET) ? str_replace("/", "_", key($_GET)) : false);
 //Exit if $function is blank
 if ($function === false) {
@@ -22,12 +21,36 @@ $result['params'] = $_POST;
 
 //<editor-fold desc="API functions">
 switch ($function) {
+    case 'v1_addService':
+        switch ($method) {
+            case 'POST':
+                if(checkAuthorization()){
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                } else {
+                    $result['status'] = 'error';
+                    $result['statusText'] = 'API/Token invalid or not set';
+                    $result['data'] = null;
+                }
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: ' . $method;
+                break;
+        }
+        break;
 	case 'v1_getPing':
 		switch ($method) {
 			case 'POST':
-				$result['status'] = 'success';
-				$result['statusText'] = 'success';
-				$result['data'] = ping($_POST['url']);
+                if(checkAuthorization()) {
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                    $result['data'] = ping($_POST['url']);
+                } else {
+                    $result['status'] = 'error';
+                    $result['statusText'] = 'API/Token invalid or not set';
+                    $result['data'] = null;
+                }
 				break;
 			default:
 				$result['status'] = 'error';
@@ -38,20 +61,26 @@ switch ($function) {
 	case 'v1_getSystemBadges':
 		switch ($method) {
 			case 'GET':
-				$result['status'] = 'success';
-				$result['statusText'] = 'success';
-				$ping = ping($settings['pinghost'] . ":" . $settings['pingport']);
-				if(!$ping) $ping = "?";
+                if(checkAuthorization()) {
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                    $ping = ping($settings['pinghost'] . ":" . $settings['pingport']);
+                    if (!$ping) $ping = "?";
 
-				$result['data'] = array(
-					"serverLoad" => getServerLoad(),
-					"ramPercentage" => getRamPercentage(),
-					"totalUptime" => getTotalUptime(),
-					"pingTime" => $ping,
-					"disk1Usage" => (isset($settings['disk1']) ? getHDFree("disk1") : "?"),
-					"disk2Usage" => (isset($settings['disk2']) ? getHDFree("disk2") : "?"),
-					"disk3Usage" => (isset($settings['disk3']) ? getHDFree("disk3") : "?"),
-				);
+                    $result['data'] = array(
+                        "serverLoad" => getServerLoad(),
+                        "ramPercentage" => getRamPercentage(),
+                        "totalUptime" => getTotalUptime(),
+                        "pingTime" => $ping,
+                        "disk1Usage" => (isset($settings['disk1']) ? getHDFree("disk1") : "?"),
+                        "disk2Usage" => (isset($settings['disk2']) ? getHDFree("disk2") : "?"),
+                        "disk3Usage" => (isset($settings['disk3']) ? getHDFree("disk3") : "?"),
+                    );
+                } else {
+                    $result['status'] = 'error';
+                    $result['statusText'] = 'API/Token invalid or not set';
+                    $result['data'] = null;
+                }
 				break;
 			default:
 				$result['status'] = 'error';

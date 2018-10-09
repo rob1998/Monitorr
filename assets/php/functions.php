@@ -34,7 +34,7 @@ function checkAuthorization(){
 
 function updateSettings($config) {
 	$configArray = array_merge_recursive_distinct(json_decode($GLOBALS['configJSON'],1), $config);
-	file_put_contents($GLOBALS['config_file'], json_encode($configArray));
+	file_put_contents($GLOBALS['config_file'], json_encode($configArray, JSON_PRETTY_PRINT));
 	return $configArray;
 }
 

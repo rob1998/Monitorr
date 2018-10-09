@@ -55,6 +55,7 @@ $(function () {
                 $formData.push({name: this.name, value: false});
             }
         });
+        //TODO rewrite array to key=>value
         console.log($formData);
         $.ajax({
             type: "POST",

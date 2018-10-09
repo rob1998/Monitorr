@@ -14,6 +14,62 @@ $(function () {
         }
     });
 
+    //<editor-fold desc="onClick actions">
+    $(document).on('click','.plugin-settings-button',function(e) {
+        $.ajax({
+            type: "POST",
+            url: "/api/?v1/createPluginSettingsForm",
+            data: {'plugin': $(this).data("plugin")},
+            dataType: "json",
+            success: function (response) {
+                let $html = response.data;
+                $("#plugin-modal").html($html);
+                $("#plugin-modal").fadeIn("slow");
+            }
+        });
+    });
+
+    $(document).on('click','.plugin-page-button',function(e) {
+        $("#plugin-modal").load("assets/plugins/" + $(this).data("plugin") + "/" + $(this).data("page"));
+        $("#plugin-modal").fadeIn("slow");
+    });
+
+    //close modal when clicked next to it
+    $(document).mouseup(function(e)
+    {
+        var container = $("#plugin-modal");
+        // if the target of the click isn't the container nor a descendant of the container
+        if (!container.is(e.target) && container.has(e.target).length === 0) container.fadeOut("slow");
+    });
+    //</editor-fold>
+
+    $(document).on('submit','#plugin-settings',function(e) {
+        e.preventDefault();
+        let $plugin = $(this).data("plugin");
+        let $formData = $(this).serializeArray();
+        $('#plugin-settings input[type="checkbox"]').each(function(){
+            if( $(this).is(":checked")){
+                let objIndex = $formData.findIndex((obj => obj.name == this.name));
+                $formData[objIndex].value = true;
+            } else {
+                $formData.push({name: this.name, value: false});
+            }
+        });
+        console.log($formData);
+        $.ajax({
+            type: "POST",
+            url: "/api/?v1/updateSettings",
+            data: {'plugins': {
+                    [$plugin]: $formData
+                }},
+            dataType: "json",
+            success: function (response) {
+                console.log(response);
+            }
+        });
+    });
+
+
     refreshConfig(true);
 
     setTimeout(syncServerTime(), settings.rftime); //delay is rftime
@@ -37,8 +93,8 @@ function createPluginList(element){
                     $html +=    "<img src='" + $imgUrl + "'>";
                     $html +=    "<h3>" + $plugin.name + "</h3>";
                     $html +=    "<div class='plugin-box-overlay'>";
-                    $html +=        "<a class='btn'><i class='icon'></i></a>";
-                    $html +=        "<a class='btn'><i class='icon'></i></a>";
+                    $html +=        "<a class='btn plugin-overlay-button plugin-page-button' data-plugin='" + $plugin.name + "' data-page='" + $plugin.page + "'><i class='icon fas fa-file-alt'></i></a>";
+                    $html +=        "<a class='btn plugin-overlay-button plugin-settings-button' data-plugin='" + $plugin.name + "'><i class='icon fas fa-cogs'></i></a>";
                     $html +=    "</div>";
                     $html += "</div>";
                 }
@@ -473,7 +529,8 @@ function load_registration() {
 
 function load_plugins() {
     document.getElementById("setttings-page-title").innerHTML = 'Plugins';
-    createPluginList("#includedContent");
+    $("#includedContent").html("<div id='plugin-list'></div><div id='plugin-modal-overlay'><div id='plugin-modal'></div></div>");
+    createPluginList("#plugin-list");
     $(".sidebar-nav-item").removeClass('active');
     $("li[data-item='plugins']").addClass("active");
 }

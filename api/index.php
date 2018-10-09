@@ -96,6 +96,25 @@ switch ($function) {
 				break;
 		}
 		break;
+	case 'v1_updateSettings':
+		switch ($method) {
+			case 'POST':
+				if(checkAuthorization()) {
+					$result['status'] = 'success';
+					$result['statusText'] = 'success';
+					$result['data'] = updateSettings($_POST);
+				} else {
+					$result['status'] = 'error';
+					$result['statusText'] = 'API/Token invalid or not set';
+					$result['data'] = null;
+				}
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
 	case 'v1_getSystemBadges':
 		switch ($method) {
 			case 'GET':

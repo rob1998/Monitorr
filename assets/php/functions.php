@@ -32,6 +32,12 @@ function checkAuthorization(){
     return ((!empty($_SESSION['user_name']) && ($_SESSION['user_is_logged_in'])) || (isset($_GET['apikey']) && ($_GET['apikey'] == $GLOBALS['monitorrAPI'])));
 }
 
+function updateSettings($config) {
+	$configArray = array_merge_recursive_distinct(json_decode($GLOBALS['configJSON'],1), $config);
+	file_put_contents($GLOBALS['config_file'], json_encode($configArray));
+	return $configArray;
+}
+
 function createFormInput($name, $value, $type, $options, $extraClass) {
 	$result = "";
 	$result .= "<label>$name: </label>";
@@ -80,7 +86,7 @@ function createPluginSettingsForm($plugin){
 		$pluginInfo = json_decode(file_get_contents($infoFilePath), true);
 		$pluginSettings = (isset($GLOBALS['configJSON']['plugins'][$plugin]) && isset($pluginInfo['settings'])) ? $GLOBALS['configJSON']['plugins'][$plugin] : array();
 
-		$result .= "<form id='$plugin-settings'>";
+		$result .= "<form id='plugin-settings' data-plugin='$plugin' method='post'>";
 		foreach ($pluginInfo['settings'] as $settingName => $settingsProperties) {
 			$result .= "<div class='form-group'>";
 
@@ -93,6 +99,7 @@ function createPluginSettingsForm($plugin){
 
 			$result .= "</div>";
 		}
+		$result .= "<button type='submit'>Submit</button>";
 		$result .= "</form>";
 
 	} else {
@@ -493,4 +500,23 @@ function url_to_domain($url) {
 	$result .= empty($port) ? "" : ":" . $port;
 	$result .=  rtrim($path, '/');;
 	return $result;
+}
+
+function array_merge_recursive_distinct ( array &$array1, array &$array2 )
+{
+	$merged = $array1;
+
+	foreach ( $array2 as $key => &$value )
+	{
+		if ( is_array ( $value ) && isset ( $merged [$key] ) && is_array ( $merged [$key] ) )
+		{
+			$merged [$key] = array_merge_recursive_distinct ( $merged [$key], $value );
+		}
+		else
+		{
+			$merged [$key] = $value;
+		}
+	}
+
+	return $merged;
 }

@@ -2,9 +2,9 @@
 require(__DIR__ . "/../../php/functions.php");
 
 $pluginInfo = json_decode(file_get_contents(__DIR__ . '/info.json'), 1);
-if(!isset($pluginInfo['settings']) || (isset($GLOBALS['configJSON']['plugins']['organizr']) && isset($pluginInfo['settings']))) {
-	$organizrAPI = $GLOBALS['configJSON']['plugins']['organizr']['organizrAPI'];
-	$organizrURL = rtrim($GLOBALS['configJSON']['plugins']['organizr']['organizrURL'], "/");
+if(!isset($pluginInfo['settings']) || (isset($GLOBALS['configJSON']['plugins']['Organizr']) && isset($pluginInfo['settings']))) {
+	$organizrAPI = $GLOBALS['configJSON']['plugins']['Organizr']['organizrAPI'];
+	$organizrURL = rtrim($GLOBALS['configJSON']['plugins']['Organizr']['organizrURL'], "/");
 	$tabList = json_decode(file_get_contents($organizrURL . "/api/?v1/tab_list&apikey=" . $organizrAPI), true);
 	if (isset($tabList['data']) && !empty($tabList['data']) && isset($tabList['data']['tabs'])) {
 		$tabs = $tabList['data']['tabs'];

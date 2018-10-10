@@ -1132,7 +1132,6 @@ th {
     padding-bottom: .5em;
 }
 
-
 #logo {
     text-align: center;
     vertical-align: middle;
@@ -1272,7 +1271,7 @@ th {
     transition: .4s;
 }
 
-.input, input.form-control, select.form-control {
+/*.input, input.form-control, select.form-control {
     color: black;
     text-align: left;
     vertical-align: middle;
@@ -1288,13 +1287,12 @@ th {
 }
 
 .input:hover, input.form-control:hover, select.form-control:hover {
-    /* border-color: #007bff; */
     border: .2rem solid #007bff;
 }
 
 .input:focus, input.form-control:focus, select.form-control:focus {
     border: .2rem solid #007bff;
-}
+}*/
 
 input:checked + .slider {
     background-color: green;
@@ -3259,6 +3257,12 @@ object {
     color: white;
 }
 
+.flex {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
 /*** Plugins ***/
 #plugin-list {
     margin-top: 0.9rem;
@@ -3303,7 +3307,7 @@ object {
     width: 10rem;
     opacity: 0;
     transition: .5s ease;
-    background-color: rgba(0,0,0,0.8);
+    background-color: rgba(0, 0, 0, 0.8);
     padding: 0.5rem;
 }
 
@@ -3328,7 +3332,7 @@ object {
 
 #plugin-modal {
     width: 60rem;
-    height: 45rem;
+    height: auto;
     background-color: #3d3d3d;
     -webkit-border-radius: 1rem;
     -moz-border-radius: 1rem;
@@ -3337,4 +3341,83 @@ object {
     margin: auto;
     display: none;
     padding: 2rem;
+}
+
+#plugin-settings input {
+    width: 100%;
+}
+
+#plugin-settings input[type=checkbox] {
+    width: auto;
+}
+
+#plugin-settings > .flex > .form-group {
+    width: 50%;
+    padding: 0 2.5rem;
+}
+
+#plugin-settings > .btn-center {
+    display: block;
+    margin: auto;
+}
+
+.onoffswitch {
+    position: relative;
+    width: 110px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.onoffswitch-checkbox {
+    display: none;
+}
+
+.onoffswitch-label {
+    display: block;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid #999999;
+    border-radius: 0.25rem;
+    position: relative;
+}
+
+.onoffswitch-inner {
+    display: block;
+    width: 200%;
+    margin-left: -100%;
+    transition: margin 0.3s ease-in 0s;
+}
+
+.onoffswitch-inner:before, .onoffswitch-inner:after {
+    display: block;
+    float: left;
+    width: 50%;
+    height: 40px;
+    padding: 0;
+    line-height: 40px;
+    font-size: 14px;
+    color: white;
+    font-family: Trebuchet, Arial, sans-serif;
+    font-weight: bold;
+    box-sizing: border-box;
+}
+
+.onoffswitch-inner:before {
+    content: "Enabled";
+    padding-left: 10px;
+    background-color: #008000;
+    color: #FFFFFF;
+}
+
+.onoffswitch-inner:after {
+    content: "Disabled";
+    padding-right: 40%;
+    background-color: #FF0000;
+    color: #FFFFFF;
+    text-align: right;
+}
+
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+    margin-left: 0;
 }

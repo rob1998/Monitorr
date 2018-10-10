@@ -37,15 +37,15 @@ function checkAuthorization(){
 
 function updateSettings($config) {
 	$GLOBALS['configJSON'] = array_merge_recursive_distinct(json_decode($GLOBALS['configJSON'],1), $config);
-	file_put_contents($GLOBALS['config_file'], json_encode($GLOBALS['configJSON'], JSON_PRETTY_PRINT));
-	return $GLOBALS['configJSON'];
+	return file_put_contents($GLOBALS['config_file'], json_encode($GLOBALS['configJSON'], JSON_PRETTY_PRINT)) === strlen(json_encode($GLOBALS['configJSON'], JSON_PRETTY_PRINT));
 }
 
-function createFormInput($name, $value, $type, $options, $extraClass) {
+function createFormInput($title, $name, $value, $type, $options, $tooltip, $extraClass) {
 	$result = "";
-	$result .= "<label>$name: </label>";
+	$result .= "<div class='field' title='$tooltip'>";
+	$result .= "<label class='label' for='$name'>$title: </label>";
+	$result .= "<div class='control'>";
 	switch ($type) {
-		case "checkbox":
 		case "color":
 		case "date":
 		case "datetime":
@@ -66,18 +66,29 @@ function createFormInput($name, $value, $type, $options, $extraClass) {
 		case "time":
 		case "url":
 		case "week":
-			$result .= "<input class='$name-input $extraClass' name='$name' type='$type' value='$value'>";
+			$result .= "<input id='$name' class='input form-control $extraClass' name='$name' type='$type' value='$value'>";
+			break;
+		case "checkbox":
+			$checked = $value == "true" ? "checked" : "";
+			$result .= "<input id='$name' class='onoffswitch-checkbox form-control $extraClass' name='$name' type='$type' $checked>";
+			$result .= "<label class='onoffswitch-label' for='$name'>";
+			$result .= "<span class='onoffswitch-inner'></span>";
+			$result .= "</label>";
 			break;
 		case "select":
-			$result .= "<select class='$name-input $extraClass' name='$name' value='$value'>";
+			$result .= "<div class='select'>";
+			$result .= "<select id='$name' class='form-control $extraClass' name='$name' value='$value'>";
 			foreach ($options as $option) {
 				$result .= "<option value='$option'>$option</option>";
 			}
 			$result .= "</select>";
+			$result .= "</div>";
 			break;
 		default:
 			break;
 	}
+	$result .= "</div>";
+	$result .= "</div>";
 	return $result;
 }
 
@@ -90,6 +101,7 @@ function createPluginSettingsForm($plugin){
 		$pluginSettings = (isset($GLOBALS['configJSON']['plugins'][$plugin]) && isset($pluginInfo['settings'])) ? $GLOBALS['configJSON']['plugins'][$plugin] : array();
 
 		$result .= "<form id='plugin-settings' data-plugin='$plugin' method='post'>";
+		$result .= "<div class='flex'>";
 		foreach ($pluginInfo['settings'] as $settingName => $settingsProperties) {
 			$result .= "<div class='form-group'>";
 
@@ -98,16 +110,23 @@ function createPluginSettingsForm($plugin){
 			}
 
 			$options = isset($settingsProperties['options']) ? $settingsProperties['options'] : "";
-			$result .= createFormInput($settingName, $pluginSettings[$settingName], $settingsProperties['type'], $options, "");
+			$title = isset($settingsProperties['description'])? $settingsProperties['description'] : $settingName;
+			$tooltip = isset($settingsProperties['tooltip']) ? $settingsProperties['tooltip'] : "";
+			$setting = isset($GLOBALS['plugins'][$plugin][$settingName]) ? $GLOBALS['plugins'][$plugin][$settingName] : $pluginSettings[$settingName];
+			$result .= createFormInput($title, $settingName, $setting, $settingsProperties['type'], $options, $tooltip, "");
 
 			$result .= "</div>";
 		}
-		$result .= "<button type='submit'>Submit</button>";
+		$result .= "</div>";
+		$result .= "<button type='submit' class='btn btn-center'>Submit</button>";
 		$result .= "</form>";
 
 	} else {
 		$result = "ERROR: no info file found for plugin '$plugin'";
 	}
+	$result .= "<script>$('.field').powerTip({
+					placement: 's'
+				});</script>";
 	return $result;
 }
 

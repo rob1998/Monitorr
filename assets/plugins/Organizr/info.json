@@ -4,14 +4,20 @@
   "settings": {
     "enabled": {
       "type": "checkbox",
-      "default": false
+      "description": "Enabled",
+      "tooltip": "Enable or disable this plugin",
+      "default": "false"
     },
     "organizrURL": {
       "type": "text",
+      "description": "Organizr URL",
+      "tooltip": "Fill in your Organizr URL, for example: https://organizr.domain.tld",
       "default": ""
     },
     "organizrAPI": {
       "type": "text",
+      "description": "Organizr API Key",
+      "tooltip": "Fill in your Organizr API Key, for example: j23h45kl2fnbwsd3984h",
       "default": ""
     }
   }

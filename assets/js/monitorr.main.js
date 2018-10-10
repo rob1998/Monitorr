@@ -1,3 +1,5 @@
+'use strict';
+
 let nIntervId = [];
 let logInterval = false;
 let autoUpdateOverwrite = false;
@@ -45,8 +47,10 @@ $(function () {
 
     $(document).on('submit','#plugin-settings',function(e) {
         e.preventDefault();
+
         let $plugin = $(this).data("plugin");
         let $formData = $(this).serializeArray();
+
         $('#plugin-settings input[type="checkbox"]').each(function(){
             if( $(this).is(":checked")){
                 let objIndex = $formData.findIndex((obj => obj.name == this.name));
@@ -55,12 +59,14 @@ $(function () {
                 $formData.push({name: this.name, value: false});
             }
         });
+
+        //rewrite to key->value array
         let $result = {};
         $formData.forEach(function(item) {
             $result[item.name] = item.value;
         });
-        //TODO rewrite array to key=>value
-        console.log($result);
+
+        console.log("ajax s");
         $.ajax({
             type: "POST",
             url: "/api/?v1/updateSettings",
@@ -69,9 +75,11 @@ $(function () {
                 }},
             dataType: "json",
             success: function (response) {
+                console.log("response");
                 console.log(response);
             }
         });
+        console.log("ajax e");
     });
 
 
@@ -412,11 +420,11 @@ function syncServerTime() {
         type: "GET",
         success: function (response) {
             var response = $.parseJSON(response);
-            servertime = response.serverTime;
+            serverTime = response.serverTime;
             timeStandard = parseInt(response.timeStandard);
             timeZone = response.timezoneSuffix;
             rftime = response.rftime;
-            date = new Date(servertime);
+            date = new Date(serverTime);
             setTimeout(function () {
                 syncServerTime()
             }, settings.rftime); //delay is rftime

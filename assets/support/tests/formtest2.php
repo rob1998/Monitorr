@@ -2,8 +2,7 @@
 <!--Code by Chris Youderian, ContactMetrics.com, http://contactmetrics.com/blog/validate-contact-form-jquery, Code released under an MIT license, http://opensource.org/licenses/MIT -->
 <html lang="en">
 	<head>
-		<!-- <script type='text/javascript' src='jquery.min.js'></script> -->
-		<script src="../../js/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     </head>
 	
 	<!-- Styles -->

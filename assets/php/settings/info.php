@@ -13,10 +13,7 @@ include('../functions.php');
     <meta name="theme-color" content="#464646"/>
     <meta name="theme_color" content="#464646"/>
 
-    <script src="../../js/jquery.min.js"></script>
-    <script src="../../js/jquery.blockUI.js" async></script>
-    <script src="assets/js/jquery.blockUI.js"></script>
-    <!-- <script type="text/javascript" src="../../js/pace.js" async></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 
     <title>
 		<?php

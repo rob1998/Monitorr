@@ -3336,4 +3336,5 @@ object {
     box-shadow: 5px 5px 5px black;
     margin: auto;
     display: none;
+    padding: 2rem;
 }

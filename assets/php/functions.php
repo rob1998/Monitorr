@@ -22,7 +22,10 @@ $configJSON = file_get_contents($config_file);
 $preferences = json_decode($configJSON, 1)['preferences'];
 $settings = json_decode($configJSON, 1)['settings'];
 $services = json_decode($configJSON, 1)['services'];
+$plugins = isset(json_decode($configJSON, 1)['plugins']) ? json_decode($configJSON, 1)['plugins'] : array();
 $authentication = json_decode($configJSON, 1)['authentication'];
+
+global $configJSON, $preferences, $settings, $services, $authentication;
 
 //authentication
 $monitorrAPI = $authentication['apikey'];
@@ -33,9 +36,9 @@ function checkAuthorization(){
 }
 
 function updateSettings($config) {
-	$configArray = array_merge_recursive_distinct(json_decode($GLOBALS['configJSON'],1), $config);
-	file_put_contents($GLOBALS['config_file'], json_encode($configArray, JSON_PRETTY_PRINT));
-	return $configArray;
+	$GLOBALS['configJSON'] = array_merge_recursive_distinct(json_decode($GLOBALS['configJSON'],1), $config);
+	file_put_contents($GLOBALS['config_file'], json_encode($GLOBALS['configJSON'], JSON_PRETTY_PRINT));
+	return $GLOBALS['configJSON'];
 }
 
 function createFormInput($name, $value, $type, $options, $extraClass) {

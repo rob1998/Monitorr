@@ -55,13 +55,17 @@ $(function () {
                 $formData.push({name: this.name, value: false});
             }
         });
+        let $result = {};
+        $formData.forEach(function(item) {
+            $result[item.name] = item.value;
+        });
         //TODO rewrite array to key=>value
-        console.log($formData);
+        console.log($result);
         $.ajax({
             type: "POST",
             url: "/api/?v1/updateSettings",
             data: {'plugins': {
-                    [$plugin]: $formData
+                    [$plugin]: $result
                 }},
             dataType: "json",
             success: function (response) {

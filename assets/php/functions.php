@@ -36,12 +36,13 @@ function checkAuthorization(){
 }
 
 function updateSettings($config) {
-	//TODO: merge from lowest level, current situation: services is being completely rewritten
+	//TODO: merge from lowest level, current situation with array_merge_recursive_distinct: services is being completely rewritten; with array_merge_recursive: items keep being added
 	$oldConfig = json_decode($GLOBALS['configJSON'],1);
 	$GLOBALS['configJSON'] = array_merge_recursive_distinct($oldConfig, $config);
 	return file_put_contents($GLOBALS['config_file'], json_encode($GLOBALS['configJSON'], JSON_PRETTY_PRINT)) === strlen(json_encode($GLOBALS['configJSON'], JSON_PRETTY_PRINT));
 }
 
+//<editor-fold desc="Form Builder">
 function createFormInput($title, $name, $value, $type, $options, $tooltip, $extraClass) {
 	$result = "";
 	$result .= "<div class='field' title='$tooltip'>";
@@ -131,6 +132,7 @@ function createPluginSettingsForm($plugin){
 				});</script>";
 	return $result;
 }
+//</editor-fold>
 
 function getPlugins(){
 	$result = array();
@@ -146,6 +148,58 @@ function getPlugins(){
 	return $result;
 }
 
+//Ping function
+function ping($pings)
+{
+	$type = gettype($pings);
+	$ping = new Ping("");
+	$ping->setTtl(128);
+	$ping->setTimeout(2);
+	switch ($type) {
+		case "array":
+			$results = [];
+			foreach ($pings as $k => $v) {
+				$v = url_to_domain($v);
+				if (strpos($v, ':') !== false) {
+					$domain = explode(':', $v)[0];
+					$port = explode(':', $v)[1];
+					$ping->setHost($domain);
+					$ping->setPort($port);
+					$latency = $ping->ping('fsockopen');
+				} else {
+					$ping->setHost($v);
+					$latency = $ping->ping();
+				}
+				if ($latency || $latency === 0) {
+					$results[$v] = $latency;
+				} else {
+					$results[$v] = false;
+				}
+			}
+			break;
+		case "string":
+			$pings = url_to_domain($pings);
+			if (strpos($pings, ':') !== false) {
+				$domain = explode(':', $pings)[0];
+				$port = explode(':', $pings)[1];
+				$ping->setHost($domain);
+				$ping->setPort($port);
+				$latency = $ping->ping('fsockopen');
+			} else {
+				$ping->setHost($pings);
+				$latency = $ping->ping();
+			}
+			if ($latency || $latency === 0) {
+				$results = $latency;
+			} else {
+				$results = false;
+			}
+			break;
+	}
+	return $results;
+}
+
+//<editor-fold desc="Server Status Functions">
 // get CPUload function
 function _getServerLoadLinuxData()
 {
@@ -245,12 +299,7 @@ function getServerLoad()
     return round($load, 2);
 }
 
-// register variable for getServerLoad()
-
-
-
 // getRAM function
-
 function getRamTotal()
 {
     $result = 0;
@@ -337,23 +386,6 @@ function getHDFree($hdd) {
     return false;
 }
 
-function getHDClass($percentage){
-	// Dynamic icon colors for badges:
-
-	$hdok = $GLOBALS['settings']['hdok'];
-	$hdwarn = $GLOBALS['settings']['hdwarn'];
-
-	if ($percentage < $hdok) {
-		$hdClass = 'success';
-	} elseif (($percentage >= $hdok) && ($percentage < $hdwarn)) {
-		$hdClass = 'warning';
-	} else {
-		$hdClass = 'danger';
-	}
-
-	return $hdClass;
-}
-
 //uptime
 function getTotalUptime(){
     $uptime = shell_exec("cut -d. -f1 /proc/uptime");
@@ -367,103 +399,7 @@ function getTotalUptime(){
     $secs_padded = sprintf("%02d", $secs);
     return "$days_padded:$hours_padded:$mins_padded";
 }
-
-
-function ping($pings)
-{
-	$type = gettype($pings);
-	$ping = new Ping("");
-	$ping->setTtl(128);
-	$ping->setTimeout(2);
-	switch ($type) {
-		case "array":
-			$results = [];
-			foreach ($pings as $k => $v) {
-				$v = url_to_domain($v);
-				if (strpos($v, ':') !== false) {
-					$domain = explode(':', $v)[0];
-					$port = explode(':', $v)[1];
-					$ping->setHost($domain);
-					$ping->setPort($port);
-					$latency = $ping->ping('fsockopen');
-				} else {
-					$ping->setHost($v);
-					$latency = $ping->ping();
-				}
-				if ($latency || $latency === 0) {
-					$results[$v] = $latency;
-				} else {
-					$results[$v] = false;
-				}
-			}
-			break;
-		case "string":
-			$pings = url_to_domain($pings);
-			if (strpos($pings, ':') !== false) {
-				$domain = explode(':', $pings)[0];
-				$port = explode(':', $pings)[1];
-				$ping->setHost($domain);
-				$ping->setPort($port);
-				$latency = $ping->ping('fsockopen');
-			} else {
-				$ping->setHost($pings);
-				$latency = $ping->ping();
-			}
-			if ($latency || $latency === 0) {
-				$results = $latency;
-			} else {
-				$results = false;
-			}
-			break;
-	}
-	return $results;
-}
-
-// Dynamic icon colors for badges
-function getRamClass($percentage)
-{
-	$ramok = $GLOBALS['settings']['ramok'];
-	$ramwarn = $GLOBALS['settings']['ramwarn'];
-
-
-	if ($percentage < $ramok) {
-		$ramClass = 'success';
-	} elseif (($percentage >= $ramok) && ($percentage < $ramwarn)) {
-		$ramClass = 'warning';
-	} else {
-		$ramClass = 'danger';
-	}
-	return$ramClass;
-}
-function getCPUClass($percentage)
-{
-	$cpuok = $GLOBALS['settings']['cpuok'];
-	$cpuwarn = $GLOBALS['settings']['cpuwarn'];
-
-	if ($percentage < $cpuok) {
-		$cpuClass = 'success';
-	} elseif (($percentage >= $cpuok) && ($percentage < $cpuwarn)) {
-		$cpuClass = 'warning';
-	} else {
-		$cpuClass = 'danger';
-	}
-	return $cpuClass;
-}
-function getPingClass($pingTime){
-	$pingok = $GLOBALS['settings']['pingok'];
-	$pingwarn = $GLOBALS['settings']['pingwarn'];
-
-	if(strpos($pingTime, '?') !== false) return 'danger';
-
-    if ($pingTime < $pingok) {
-	    $pingclass = 'success';
-    } elseif (($pingTime >= $pingok) && ($pingTime < $pingwarn)) {
-	    $pingclass = 'warning';
-    } else {
-	    $pingclass = 'danger';
-    }
-    return $pingclass;
-}
+//</editor-fold>
 
 
 
@@ -486,35 +422,12 @@ $ext_version_loc = 'https://raw.githubusercontent.com/Monitorr/Monitorr/' . $bra
 $vnum_loc = "../js/version/version.txt"; #example: version/vnum_1.txt
 
 
-function recurse_copy($src,$dst) {
-    $dir = opendir($src);
-    @mkdir($dst);
-    while(false !== ( $file = readdir($dir)) ) {
-        if (( $file != '.' ) && ( $file != '..' )) {
-            if ( is_dir($src . '/' . $file) ) {
-                recurse_copy($src . '/' . $file,$dst . '/' . $file);
-            }
-            else {
-                copy($src . '/' . $file,$dst . '/' . $file);
-            }
-        }
-    }
-    closedir($dir);
-}
-
-function delTree($dir) {
-   $files = array_diff(scandir($dir), array('.','..'));
-    foreach ($files as $file) {
-      (is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file");
-    }
-    return rmdir($dir);
-  }
-
 function configExists()
 {
 	return is_file($GLOBALS['config_file']);
 }
 
+//<editor-fold desc="Helper Functions">
 function url_to_domain($url) {
 	$host = parse_url($url, PHP_URL_HOST);
 	$port = parse_url($url, PHP_URL_PORT);
@@ -524,6 +437,30 @@ function url_to_domain($url) {
 	$result .= empty($port) ? "" : ":" . $port;
 	$result .=  rtrim($path, '/');;
 	return $result;
+}
+
+function recurse_copy($src,$dst) {
+	$dir = opendir($src);
+	@mkdir($dst);
+	while(false !== ( $file = readdir($dir)) ) {
+		if (( $file != '.' ) && ( $file != '..' )) {
+			if ( is_dir($src . '/' . $file) ) {
+				recurse_copy($src . '/' . $file,$dst . '/' . $file);
+			}
+			else {
+				copy($src . '/' . $file,$dst . '/' . $file);
+			}
+		}
+	}
+	closedir($dir);
+}
+
+function delTree($dir) {
+	$files = array_diff(scandir($dir), array('.','..'));
+	foreach ($files as $file) {
+		(is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file");
+	}
+	return rmdir($dir);
 }
 
 function array_merge_recursive_distinct ( array &$array1, array &$array2 )
@@ -544,3 +481,4 @@ function array_merge_recursive_distinct ( array &$array1, array &$array2 )
 
 	return $merged;
 }
+//</editor-fold>

@@ -36,7 +36,9 @@ function checkAuthorization(){
 }
 
 function updateSettings($config) {
-	$GLOBALS['configJSON'] = array_merge_recursive_distinct(json_decode($GLOBALS['configJSON'],1), $config);
+	//TODO: merge from lowest level, current situation: services is being completely rewritten
+	$oldConfig = json_decode($GLOBALS['configJSON'],1);
+	$GLOBALS['configJSON'] = array_merge_recursive_distinct($oldConfig, $config);
 	return file_put_contents($GLOBALS['config_file'], json_encode($GLOBALS['configJSON'], JSON_PRETTY_PRINT)) === strlen(json_encode($GLOBALS['configJSON'], JSON_PRETTY_PRINT));
 }
 

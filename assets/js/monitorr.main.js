@@ -67,7 +67,6 @@ $(function () {
             $result[item.name] = item.value;
         });
 
-        console.log("ajax s");
         $.ajax({
             type: "POST",
             url: "/api/?v1/updateSettings",
@@ -80,7 +79,6 @@ $(function () {
                 console.log(response);
             }
         });
-        console.log("ajax e");
     });
 
     refreshConfig(true);

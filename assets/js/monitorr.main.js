@@ -32,7 +32,8 @@ $(function () {
     });
 
     $(document).on('click','.plugin-page-button',function(e) {
-        $("#plugin-modal").load("assets/plugins/" + $(this).data("plugin") + "/" + $(this).data("page"));
+        $("#plugin-modal").html("");
+        $("#plugin-modal").html('<object type="text/html" class="object" data="../../plugins/' + $(this).data("plugin") + "/" + $(this).data("page") + '" ></object>');
         $("#plugin-modal").fadeIn("slow");
     });
 
@@ -82,11 +83,7 @@ $(function () {
         console.log("ajax e");
     });
 
-
     refreshConfig(true);
-
-    setTimeout(syncServerTime(), settings.rftime); //delay is rftime
-    updateTime();
 });
 
 function createPluginList(element){
@@ -101,7 +98,7 @@ function createPluginList(element){
                 let $html = "";
                 for(let i = 0; i<response.data.length; i++) {
                     let $plugin = response.data[i];
-                    let $imgUrl = "assets/plugins/" + $plugin.name + "/" + $plugin.image;
+                    let $imgUrl = "../../plugins/" + $plugin.name + "/" + $plugin.image;
                     $html += "<div class='plugin-box'>";
                     $html +=    "<img src='" + $imgUrl + "'>";
                     $html +=    "<h3>" + $plugin.name + "</h3>";
@@ -542,8 +539,7 @@ function load_registration() {
 
 function load_plugins() {
     document.getElementById("setttings-page-title").innerHTML = 'Plugins';
-    $("#includedContent").html("<div id='plugin-list'></div><div id='plugin-modal-overlay'><div id='plugin-modal'></div></div>");
-    createPluginList("#plugin-list");
+    document.getElementById("includedContent").innerHTML = '<object type="text/html" class="object" data="assets/php/settings/plugins.php" ></object>';
     $(".sidebar-nav-item").removeClass('active');
     $("li[data-item='plugins']").addClass("active");
 }

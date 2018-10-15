@@ -66,6 +66,11 @@ https://github.com/Monitorr/Monitorr
         let timeStandard = <?php echo $timeStandard;?>;
         let timeZone = "<?php echo $timezone_suffix;?>";
         let rftime = <?php echo $GLOBALS['settings']['rftime'];?>;
+
+        $(function () {
+            setTimeout(syncServerTime(), settings.rftime); //delay is rftime
+            updateTime();
+        });
     </script>
 
     <title>
@@ -102,8 +107,8 @@ https://github.com/Monitorr/Monitorr
         });
     </script>
 
-    <script src="assets/js/clock.js" async></script>
     <script src="assets/data/custom.js"></script>
+    <script src="assets/js/clock.js" async></script>
 </head>
 
 <body>

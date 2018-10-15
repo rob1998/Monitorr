@@ -2269,10 +2269,15 @@ uploadbtn:hover {
     position: relative;
 }
 
-.object {
+/*.object {
     float: right;
     width: 100%;
     height: 58rem;
+}*/
+.object {
+    /* float: right; */
+    width: 100%;
+    height: 80vh;
 }
 
 #version_check {

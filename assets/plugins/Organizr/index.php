@@ -1,3 +1,10 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>Import Organizr Tabs</h1>
 <?php
 include(__DIR__ . "/../../php/functions.php");
 
@@ -9,6 +16,7 @@ if(!isset($pluginInfo['settings']) || (isset($GLOBALS['plugins']['Organizr']) &&
 	if (isset($tabList['data']) && !empty($tabList['data']) && isset($tabList['data']['tabs'])) {
 		$tabs = $tabList['data']['tabs'];
 		echo "<form id='' action='../../../api?v1/importOrganizrTabs' method='post'><table>";
+		echo "<tr><th>Import</th><th>Name</th><th>Link URL</th><th>Ping URL</th><th>Image path</th></tr>";
 		foreach ($tabs as $tab) {
 			echo "<tr>";
 			$checked = ($tab['ping'] == 1) ? "checked" : "";
@@ -21,7 +29,7 @@ if(!isset($pluginInfo['settings']) || (isset($GLOBALS['plugins']['Organizr']) &&
 			echo "</tr>";
 		}
 		echo "</table>";
-		echo "<button tyep='submit'>Submit</button>";
+		echo "<button type='submit'>Submit</button>";
 		echo "</form>";
 	} else {
 		echo "No valid response received. Response:<br>";
@@ -33,3 +41,7 @@ if(!isset($pluginInfo['settings']) || (isset($GLOBALS['plugins']['Organizr']) &&
 } else {
 	echo "No settings were found.";
 }
+?>
+</body>
+</html>
+

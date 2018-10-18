@@ -125,4 +125,5 @@ $(function () {
     clockImage = new Image();
     clockImage.src = 'assets/js/cface.png';
     setInterval(updateClock, 1000); // loop drawScene
+    setTimeout(syncServerTime(), settings.rftime);
 });

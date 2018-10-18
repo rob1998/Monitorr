@@ -132,8 +132,7 @@ include('../auth_check.php');
             <td><strong>Tools:</strong></td>
             <td>
                 <a href="../../../index.min.php" class="toolslink" target="_blank" title="Monitorr Minimal"> Monitorr Minimal |</a>
-                <a href="../../plugins/Organizr/organizr_import.php" class="toolslink" target="_blank" title="Organizr Import"> Import Organizr Tabs |</a>
-                <a href="../../../settings.php?action=config" class="toolslink" title="Monitorr Registration"> Registration |</a>
+                <a href="../../../speedtest.php" class="toolslink" target="_blank" title="Speedtest"> Speedtest |</a>
                 <a href="../checkmanual.php" target="_blank" class="toolslink" title="Curl check tool"> Curl manual check |</a>
                 <a href="../checkping.php" target="_blank" class="toolslink" title="Ping check tool"> Ping manual check  </a>
             </td>

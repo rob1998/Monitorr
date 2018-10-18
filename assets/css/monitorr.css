@@ -332,7 +332,6 @@ input[type=email]:hover {
     color: white;
     text-shadow: 1px 1px black;
     box-shadow: 5px 5px 10px rgb(15, 15, 15);
-    margin-top: -1.5rem;
     z-index: 3000;
     cursor: default;
 }

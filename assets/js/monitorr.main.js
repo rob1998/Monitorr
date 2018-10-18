@@ -20,7 +20,7 @@ $(function () {
     $(document).on('click','.plugin-settings-button',function(e) {
         $.ajax({
             type: "POST",
-            url: "/api/?v1/createPluginSettingsForm",
+            url: "/api/?v1/formBuilder/settingsForm/plugin",
             data: {'plugin': $(this).data("plugin")},
             dataType: "json",
             success: function (response) {
@@ -83,6 +83,39 @@ $(function () {
 
     refreshConfig(true);
 });
+
+function updateSummary() {
+
+    console.log('Service offline check START');
+
+    $.ajax({
+        type: 'GET',
+        url: 'api/?v1/services/get/offline',
+        dataType: "json",
+        success: function (response) {
+            if (response.status === "success") {
+                let $result = response.data;
+                if($result.length === 0) {
+                    $("#summary").hide();
+                } else {
+                    $("#summary").fadeOut(function () {
+                        $(this).html($result[0]).fadeIn();
+                    });
+                }
+            } else {
+                console.log("ERROR: API error" + response.statusText);
+                $('#ajaxmarquee').html('<i class="fa fa-fw fa-exclamation-triangle"></i>');
+            }
+        },
+        error: function (x, t, m) {
+            if (t === "timeout") {
+                console.log("ERROR: marquee timeout");
+                $('#ajaxmarquee').html('<i class="fa fa-fw fa-exclamation-triangle"></i>');
+            } else {
+            }
+        }
+    });
+}
 
 function createPluginList(element){
     $.ajax({
@@ -172,10 +205,10 @@ function ping(service) {
     $.ajax({
         type: "POST",
         url: "api/?v1/getPing",
-        data: {'url': service.checkurl},
+        data: {'service': service.serviceTitle},
         dataType: "json",
         success: function(response){
-
+            console.log(response);
             let $pingTime = response.data;
             let $serviceElement = $("#service-" + service.serviceTitle.replace(/ /g, "-"));
             let $pingClassElement = $("#pingindicator-" + service.serviceTitle.replace(/ /g, "-") + " > div");
@@ -368,42 +401,45 @@ function getSystemBadges() {
 
 function refreshConfig(updateServices) {
     $.ajax({
-        url: "assets/php/sync-config.php",
+        url: "api/?v1/settings/get",
         type: "GET",
         success: function (response) {
 
             let json = JSON.parse(response);
-            settings = json.settings;
-            preferences = json.preferences;
-            services = json.services;
+            if(json.status === "success"){
+                let $data = json.data;
+                settings = $data.settings;
+                preferences = $data.preferences;
+                services = $data.services;
 
-            setTimeout(function () {
-                refreshConfig()
-            }, settings.rfconfig); //delay is rftime
+                setTimeout(function () {
+                    refreshConfig()
+                }, settings.rfconfig); //delay is rftime
 
 
-            $("#auto-update-status").attr("data-enabled", settings.logRefresh);
+                $("#auto-update-status").attr("data-enabled", settings.logRefresh);
 
-            if (updateServices) {
-                if (settings.logRefresh == "true" && (logInterval == false || settings.rflog != current_rflog)) {
-                    clearInterval(nIntervId);
-                    nIntervId = setInterval(refreshblockUI, settings.rflog);
-                    logInterval = true;
-                    $("#autoUpdateSlider").attr("data-enabled", "true");
-                    current_rflog = settings.rflog;
-                    console.log("Auto update: Enabled | Interval: " + settings.rflog + " ms");
-                    $.growlUI("Auto update: Enabled");
-                } else if (settings.logRefresh == "false" && logInterval == true) {
-                    clearInterval(nIntervId);
-                    logInterval = false;
-                    $("#autoUpdateSlider").attr("data-enabled", "false");
-                    console.log("Auto update: Disabled");
-                    $.growlUI("Auto update: Disabled");
+                if (updateServices) {
+                    if (settings.logRefresh == "true" && (logInterval == false || settings.rflog != current_rflog)) {
+                        clearInterval(nIntervId);
+                        nIntervId = setInterval(refreshblockUI, settings.rflog);
+                        logInterval = true;
+                        $("#autoUpdateSlider").attr("data-enabled", "true");
+                        current_rflog = settings.rflog;
+                        console.log("Auto update: Enabled | Interval: " + settings.rflog + " ms");
+                        $.growlUI("Auto update: Enabled");
+                    } else if (settings.logRefresh == "false" && logInterval == true) {
+                        clearInterval(nIntervId);
+                        logInterval = false;
+                        $("#autoUpdateSlider").attr("data-enabled", "false");
+                        console.log("Auto update: Disabled");
+                        $.growlUI("Auto update: Disabled");
+                    }
                 }
-            }
 
-            document.title = preferences.sitetitle; //update page title to configured title
-            //console.log('Refreshed config variables');
+                document.title = preferences.sitetitle; //update page title to configured title
+                //console.log('Refreshed config variables');
+            }
         }
     });
 }

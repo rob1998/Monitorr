@@ -10,7 +10,7 @@ include('../auth_check.php');
     <meta charset="utf-8">
     <link type="text/css" href="../../css/bootstrap.min.css" rel="stylesheet">
     <link type="text/css" href="../../css/alpaca.min.css" rel="stylesheet">
-    <link type="text/css" href="../../css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
     <!-- <link type="text/css" href="../main.css" rel="stylesheet"> -->
     <link type="text/css" href="../../css/monitorr.css" rel="stylesheet">
     <link type="text/css" href="../../data/custom.css" rel="stylesheet">
@@ -261,8 +261,8 @@ include('../auth_check.php');
                                     // Window/modal will appear with image when user inputs path into "service Image" text field and clicks out of field:"
                                     var value = this.getValue();
                                     if (value) {
-                                        var img = $("<img src=" + value + "'../../img' style='width:7rem' alt=' image not found'>");
-                                        $("#mymodal2").append(img);
+                                        var img = $("<img src='../" + value + "' style='width:7rem' alt=' image not found'>");
+                                        $("#mymodal2").html(img);
                                     }
 
                                     var modal = document.getElementById('myModal');

@@ -75,10 +75,7 @@ https://github.com/Monitorr/Monitorr
         let serverTime = "<?php echo $serverTime;?>";
         let timeStandard = <?php echo $timeStandard;?>;
         let timeZone = "<?php echo $timezone_suffix;?>";
-        let rftime = <?php echo $GLOBALS['settings']['rftime'];?>;
-
-        setTimeout(syncServerTime(), settings.rftime); //delay is rftime
-        updateTime();
+        let rftime = <?php echo $GLOBALS['settings']['rftime'];?>; //delay is rftime
     </script>
 
     <script src="assets/js/clock.js"></script>
@@ -108,53 +105,10 @@ https://github.com/Monitorr/Monitorr
                 var current = -1;
                 var onload;
 
-                function updateSummary() {
-
-                    console.log('Service offline check START');
-
-                    rfsysinfo =
-					<?php
-						$rfsysinfo = $GLOBALS['settings']['rfsysinfo'];
-						echo $rfsysinfo;
-						?>
-
-                        $.ajax({
-                            type: 'POST',
-                            url: 'assets/php/marquee.php',
-                            data: {
-                                current: current
-                            },
-
-                            timeout: 7000,
-                            success: function (data) {
-                                if (data) {
-                                    result = $.parseJSON(data);
-                                    console.log(result);
-                                    $("#summary").fadeOut(function () {
-                                        $(this).html(result[0]).fadeIn();
-                                    });
-                                    current = result[1];
-                                }
-
-                                else {
-                                    current = -1;
-                                    $("#summary").hide();
-                                }
-                            },
-                            error: function (x, t, m) {
-                                if (t === "timeout") {
-                                    console.log("ERROR: marquee timeout");
-                                    $('#ajaxmarquee').html('<i class="fa fa-fw fa-exclamation-triangle"></i>');
-                                } else {
-                                }
-                            }
-                        });
-                }
-
                 if ($(this).is(':checked')) {
                     updateSummary();
-                    nIntervId2 = setInterval(updateSummary, rfsysinfo);
-                    console.log("Auto refresh: Enabled | Interval: <?php echo $rfsysinfo; ?> ms");
+                    nIntervId2 = setInterval(updateSummary, settings.rfsysinfo);
+                    console.log("Auto refresh: Enabled | Interval: " +  settings.rfsysinfo + " ms");
                 } else {
                     clearInterval(nIntervId2);
                     console.log("Auto refresh: Disabled");

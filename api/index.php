@@ -21,31 +21,21 @@ $result['params'] = $_POST;
 
 //<editor-fold desc="API functions">
 switch ($function) {
-    case 'v1_addService':
-        switch ($method) {
-            case 'POST':
-                if(checkAuthorization()){
-                    $result['status'] = 'success';
-                    $result['statusText'] = 'success';
-                } else {
-                    $result['status'] = 'error';
-                    $result['statusText'] = 'API/Token invalid or not set';
-                    $result['data'] = null;
-                }
-                break;
-            default:
-                $result['status'] = 'error';
-                $result['statusText'] = 'The function requested is not defined for method: ' . $method;
-                break;
-        }
-        break;
 	case 'v1_getPing':
 		switch ($method) {
 			case 'POST':
                 if(checkAuthorization()) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
-                    $result['data'] = ping($_POST['url']);
+                    $service = $_POST['service'];
+	                $key = array_search($service, array_column($GLOBALS['services'], 'serviceTitle'));
+	                $pingUrl = $GLOBALS['services'][$key]['checkurl'];
+                    $result['data'] = ping($pingUrl);
+                    if(!$result['data']) {
+	                    file_put_contents(__DIR__ . "/../assets/data/logs/" . $service . ".json", $service . " is offline since " . date("h:i:sa"));
+                    } else {
+	                    if(file_exists(__DIR__ . "/../data/logs/" . $service . ".json")) unlink(__DIR__ . "/../data/logs/" . $service . ".json");
+                    }
                 } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
@@ -77,7 +67,37 @@ switch ($function) {
 				break;
 		}
 		break;
-	case 'v1_createPluginSettingsForm':
+	case 'v1_getSystemBadges':
+		switch ($method) {
+			case 'GET':
+				if(checkAuthorization()) {
+					$result['status'] = 'success';
+					$result['statusText'] = 'success';
+					$ping = ping($GLOBALS['settings']['pinghost'] . ":" . $GLOBALS['settings']['pingport']);
+					if (!$ping) $ping = "?";
+
+					$result['data'] = array(
+						"serverLoad" => getServerLoad(),
+						"ramPercentage" => getRamPercentage(),
+						"totalUptime" => getTotalUptime(),
+						"pingTime" => $ping,
+						"disk1Usage" => (isset($GLOBALS['settings']['disk1']) ? getHDFree("disk1") : "?"),
+						"disk2Usage" => (isset($GLOBALS['settings']['disk2']) ? getHDFree("disk2") : "?"),
+						"disk3Usage" => (isset($GLOBALS['settings']['disk3']) ? getHDFree("disk3") : "?"),
+					);
+				} else {
+					$result['status'] = 'error';
+					$result['statusText'] = 'API/Token invalid or not set';
+					$result['data'] = null;
+				}
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
+	case 'v1_formBuilder_settingsForm_plugin':
 		switch ($method) {
 			case 'POST':
 				if(checkAuthorization()) {
@@ -96,13 +116,13 @@ switch ($function) {
 				break;
 		}
 		break;
-	case 'v1_updateSettings':
+	case 'v1_services_get_offline':
 		switch ($method) {
-			case 'POST':
+			case 'GET':
 				if(checkAuthorization()) {
 					$result['status'] = 'success';
 					$result['statusText'] = 'success';
-					$result['data'] = updateSettings($_POST);
+					$result['data'] = getOfflineServices();
 				} else {
 					$result['status'] = 'error';
 					$result['statusText'] = 'API/Token invalid or not set';
@@ -115,29 +135,37 @@ switch ($function) {
 				break;
 		}
 		break;
-	case 'v1_getSystemBadges':
+	case 'v1_settings_get':
 		switch ($method) {
 			case 'GET':
-                if(checkAuthorization()) {
-                    $result['status'] = 'success';
-                    $result['statusText'] = 'success';
-                    $ping = ping($settings['pinghost'] . ":" . $settings['pingport']);
-                    if (!$ping) $ping = "?";
-
-                    $result['data'] = array(
-                        "serverLoad" => getServerLoad(),
-                        "ramPercentage" => getRamPercentage(),
-                        "totalUptime" => getTotalUptime(),
-                        "pingTime" => $ping,
-                        "disk1Usage" => (isset($settings['disk1']) ? getHDFree("disk1") : "?"),
-                        "disk2Usage" => (isset($settings['disk2']) ? getHDFree("disk2") : "?"),
-                        "disk3Usage" => (isset($settings['disk3']) ? getHDFree("disk3") : "?"),
-                    );
-                } else {
-                    $result['status'] = 'error';
-                    $result['statusText'] = 'API/Token invalid or not set';
-                    $result['data'] = null;
-                }
+				if(checkAuthorization()) {
+					$result['status'] = 'success';
+					$result['statusText'] = 'success';
+					$result['data'] = json_decode(file_get_contents($config_file), 1);
+				} else {
+					$result['status'] = 'error';
+					$result['statusText'] = 'API/Token invalid or not set';
+					$result['data'] = null;
+				}
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
+	case 'v1_settings_update':
+		switch ($method) {
+			case 'POST':
+				if(checkAuthorization()) {
+					$result['status'] = 'success';
+					$result['statusText'] = 'success';
+					$result['data'] = updateSettings($_POST);
+				} else {
+					$result['status'] = 'error';
+					$result['statusText'] = 'API/Token invalid or not set';
+					$result['data'] = null;
+				}
 				break;
 			default:
 				$result['status'] = 'error';

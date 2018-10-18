@@ -35,6 +35,23 @@ function checkAuthorization(){
     return ((!empty($_SESSION['user_name']) && ($_SESSION['user_is_logged_in'])) || (isset($_GET['apikey']) && ($_GET['apikey'] == $GLOBALS['monitorrAPI'])));
 }
 
+function getOfflineServices() {
+	$files = glob(__DIR__ . "/../data/logs/*.json");
+	$servicesNames = array();
+	foreach($GLOBALS['services'] as $service) {
+		$servicesNames[] = $service['serviceTitle'];
+	}
+	$result = array();
+	foreach($files as $file){
+		if(!in_array(str_replace(".json", "", basename($file)), $servicesNames)){
+			unlink($file);
+		} else {
+			$result[] = ucfirst(file_get_contents ($file));
+		}
+	}
+	return $result;
+}
+
 function updateSettings($config) {
 	$oldConfig = json_decode($GLOBALS['configJSON'],1);
 	$GLOBALS['configJSON'] = array_merge_recursive_distinct($oldConfig, $config);
@@ -148,52 +165,26 @@ function getPlugins(){
 }
 
 //Ping function
-function ping($pings)
+function ping($pingUrl)
 {
-	$type = gettype($pings);
 	$ping = new Ping("");
 	$ping->setTtl(128);
 	$ping->setTimeout(2);
-	switch ($type) {
-		case "array":
-			$results = [];
-			foreach ($pings as $k => $v) {
-				$v = url_to_domain($v);
-				if (strpos($v, ':') !== false) {
-					$domain = explode(':', $v)[0];
-					$port = explode(':', $v)[1];
-					$ping->setHost($domain);
-					$ping->setPort($port);
-					$latency = $ping->ping('fsockopen');
-				} else {
-					$ping->setHost($v);
-					$latency = $ping->ping();
-				}
-				if ($latency || $latency === 0) {
-					$results[$v] = $latency;
-				} else {
-					$results[$v] = false;
-				}
-			}
-			break;
-		case "string":
-			$pings = url_to_domain($pings);
-			if (strpos($pings, ':') !== false) {
-				$domain = explode(':', $pings)[0];
-				$port = explode(':', $pings)[1];
-				$ping->setHost($domain);
-				$ping->setPort($port);
-				$latency = $ping->ping('fsockopen');
-			} else {
-				$ping->setHost($pings);
-				$latency = $ping->ping();
-			}
-			if ($latency || $latency === 0) {
-				$results = $latency;
-			} else {
-				$results = false;
-			}
-			break;
+	$pings = url_to_domain($pingUrl);
+	if (strpos($pings, ':') !== false) {
+		$domain = explode(':', $pings)[0];
+		$port = explode(':', $pings)[1];
+		$ping->setHost($domain);
+		$ping->setPort($port);
+		$latency = $ping->ping('fsockopen');
+	} else {
+		$ping->setHost($pings);
+		$latency = $ping->ping();
+	}
+	if ($latency || $latency === 0) {
+		$results = $latency;
+	} else {
+		$results = false;
 	}
 	return $results;
 }

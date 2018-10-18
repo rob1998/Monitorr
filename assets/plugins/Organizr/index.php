@@ -27,7 +27,7 @@
                 console.log({'services': $result});
                 $.ajax({
                     type: "POST",
-                    url: "../../../api?v1/updateSettings",
+                    url: "../../../api?v1/settings/update",
                     data: {'services': $result},
                     dataType: "json",
                     success: function (response) {

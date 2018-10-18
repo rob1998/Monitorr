@@ -36,7 +36,6 @@ function checkAuthorization(){
 }
 
 function updateSettings($config) {
-	//TODO: merge from lowest level, current situation with array_merge_recursive_distinct: services is being completely rewritten; with array_merge_recursive: items keep being added
 	$oldConfig = json_decode($GLOBALS['configJSON'],1);
 	$GLOBALS['configJSON'] = array_merge_recursive_distinct($oldConfig, $config);
 	return file_put_contents($GLOBALS['config_file'], json_encode($GLOBALS['configJSON'], JSON_PRETTY_PRINT)) === strlen(json_encode($GLOBALS['configJSON'], JSON_PRETTY_PRINT));
@@ -463,19 +462,26 @@ function delTree($dir) {
 	return rmdir($dir);
 }
 
-function array_merge_recursive_distinct ( array &$array1, array &$array2 )
+function array_merge_recursive_distinct (array & $array1, array & $array2)
 {
 	$merged = $array1;
 
-	foreach ( $array2 as $key => &$value )
+	foreach ($array2 as $key => & $value)
 	{
-		if ( is_array ( $value ) && isset ( $merged [$key] ) && is_array ( $merged [$key] ) )
-		{
-			$merged [$key] = array_merge_recursive_distinct ( $merged [$key], $value );
-		}
-		else
-		{
-			$merged [$key] = $value;
+		if (is_array($value) && isset($merged[$key]) && is_array($merged[$key])) {
+			if($key == "services"){
+				foreach ($value as $r_value) {
+					if(!in_array($r_value, $merged[$key])){
+						$merged[$key][] = $r_value;
+					}
+				}
+			} else {
+				$merged[$key] = array_merge_recursive_distinct($merged[$key], $value);
+			}
+		} else if (is_numeric($key)) {
+			if (!in_array($value, $merged)) $merged[] = $value;
+		} else {
+			$merged[$key] = $value;
 		}
 	}
 

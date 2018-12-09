@@ -69,7 +69,7 @@ $(function () {
 
         $.ajax({
             type: "POST",
-            url: "/api/?v1/updateSettings",
+            url: "/api/?v1/settings/update",
             data: {'plugins': {
                     [$plugin]: $result
                 }},

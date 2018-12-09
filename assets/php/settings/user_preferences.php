@@ -92,6 +92,7 @@ include('../auth_check.php');
                             "sitetitle": "leftcolumn",
                             "siteurl": "leftcolumn",
                             "updateBranch": "leftcolumn",
+                            "offlineServicesFirst": "leftcolumn",
                             "language": "rightcolumn",
                             "timezone": "rightcolumn",
                             "timestandard": "rightcolumn"
@@ -112,6 +113,14 @@ include('../auth_check.php');
                             },
                             "bindings": {
                                 "siteurl": "#site_url_input"
+                            }
+                        },
+                        "/offlineServicesFirst": {
+                            "templates": {
+                                "control": "./templates/templates-user-preferences_offline_services_first.html"
+                            },
+                            "bindings": {
+                                "updateBranch": "#offlineServicesFirst"
                             }
                         },
                         "/updateBranch": {
@@ -211,6 +220,32 @@ include('../auth_check.php');
                             "focus": false,
                             "optionLabels": [" Master", " Develop", " Alpha"],
                             "name": "updateBranch",
+                            "typeahead": {},
+                            "allowOptionalEmpty": false,
+                            "data": {},
+                            "autocomplete": "false",
+                            "disallowEmptySpaces": true,
+                            "disallowOnlyEmptySpaces": false,
+                            "removeDefaultNone": true,
+                            "fields": {},
+                            "events": {
+                                "change": function () {
+                                    $('.alpaca-form-button-submit').addClass('buttonchange');
+                                }
+                            }
+                        },
+                        "offlineServicesFirst": {
+                            "type": "radio",
+                            "validate": true,
+                            "showMessages": true,
+                            "disabled": false,
+                            "hidden": false,
+                            "label": "Offline services first:",
+                            "helpers": ["Shows offline services first."],
+                            "hideInitValidationError": false,
+                            "focus": false,
+                            "optionLabels": ["True","False"],
+                            "name": "offlineServicesFirst",
                             "typeahead": {},
                             "allowOptionalEmpty": false,
                             "data": {},

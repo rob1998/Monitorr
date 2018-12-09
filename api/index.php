@@ -154,6 +154,25 @@ switch ($function) {
 				break;
 		}
 		break;
+	case 'v1_services_sort_alphabetically':
+		switch ($method) {
+			case 'GET':
+				if(checkAuthorization()) {
+					$result['status'] = 'success';
+					$result['statusText'] = 'success';
+					$result['data'] = sortServicesAlphabetically();
+				} else {
+					$result['status'] = 'error';
+					$result['statusText'] = 'API/Token invalid or not set';
+					$result['data'] = null;
+				}
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
 	case 'v1_settings_update':
 		switch ($method) {
 			case 'POST':

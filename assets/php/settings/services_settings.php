@@ -23,6 +23,7 @@ include('../auth_check.php');
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://code.cloudcms.com/alpaca/1.5.24/bootstrap/alpaca.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.9/ace.js"></script>
+    <script src="../../js/monitorr.main.js"></script>
 
     <title>
 		<?php
@@ -61,6 +62,7 @@ include('../auth_check.php');
 </div>
 
 <div id="serviceform">
+    <button onclick="sortServicesAlphabetically()">Sort alphabetically</button>
     <div id="servicesettings"></div>
 
     <script type="text/javascript">

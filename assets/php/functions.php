@@ -35,6 +35,14 @@ function checkAuthorization(){
     return ((!empty($_SESSION['user_name']) && ($_SESSION['user_is_logged_in'])) || (isset($_GET['apikey']) && ($_GET['apikey'] == $GLOBALS['monitorrAPI'])));
 }
 
+function sortServicesAlphabetically() {
+	$config = json_decode($GLOBALS['configJSON'],1);
+	$servicesArr = $GLOBALS["services"];
+	usort($servicesArr, "sortServicesByName");
+	$config["services"] = $servicesArr;
+	return file_put_contents($GLOBALS['config_file'], json_encode($config, JSON_PRETTY_PRINT));
+}
+
 function getOfflineServices() {
 	$files = glob(__DIR__ . "/../data/logs/*.json");
 	$servicesNames = array();
@@ -477,5 +485,9 @@ function array_merge_recursive_distinct (array & $array1, array & $array2)
 	}
 
 	return $merged;
+}
+
+function sortServicesByName($service1, $service2) {
+	return strcmp(strtolower($service1["serviceTitle"]), strtolower($service2["serviceTitle"]));
 }
 //</editor-fold>

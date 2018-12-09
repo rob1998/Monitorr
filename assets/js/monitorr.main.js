@@ -84,6 +84,29 @@ $(function () {
     refreshConfig(true);
 });
 
+function sortServicesAlphabetically(){
+    $.ajax({
+        type: 'GET',
+        url: '../../../api/?v1/services/sort/alphabetically',
+        dataType: "json",
+        success: function (response) {
+            if (response.status === "success") {
+                //refresh page
+            } else {
+                console.log("ERROR: API error" + response.statusText);
+                $('#ajaxmarquee').html('<i class="fa fa-fw fa-exclamation-triangle"></i>');
+            }
+        },
+        error: function (x, t, m) {
+            if (t === "timeout") {
+                console.log("ERROR: marquee timeout");
+                $('#ajaxmarquee').html('<i class="fa fa-fw fa-exclamation-triangle"></i>');
+            } else {
+            }
+        }
+    });
+}
+
 function updateSummary() {
 
     console.log('Service offline check START');
@@ -231,6 +254,9 @@ function ping(service) {
                 $serviceElement.find(".servicetitle").addClass("offline");
                 $serviceElement.find(".serviceimg").addClass("offline");
 
+                if(preferences.offlineServicesFirst == "True") {
+                    $($serviceElement).parent().prepend($serviceElement);
+                }
             } else {
 
                 let $pingok = settings.pingok;
@@ -259,7 +285,6 @@ function ping(service) {
                 $serviceElement.find(".servicetile").removeClass("offline");
                 $serviceElement.find(".servicetitle").removeClass("offline");
                 $serviceElement.find(".serviceimg").removeClass("offline");
-
             }
         }
     });

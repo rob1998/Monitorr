@@ -30,7 +30,7 @@
       "default": "true",
       "properties": {}
     },
-    "logsEnabled": {
+    "servicesEnabled": {
       "type": "string",
       "enum": [
         "true",

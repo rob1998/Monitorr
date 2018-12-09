@@ -89,7 +89,7 @@ include('../auth_check.php');
                             "apikey": "leftcolumn",
                             "registrationEnabled": "leftcolumn",
                             "settingsEnabled": "rightcolumn",
-                            "logsEnabled": "rightcolumn"
+                            "servicesEnabled": "rightcolumn"
                         }
                     }
                 },
@@ -183,18 +183,18 @@ include('../auth_check.php');
                                 }
                             }
                         },
-                        "logsEnabled": {
+                        "servicesEnabled": {
                             "type": "radio",
                             "validate": true,
                             "showMessages": true,
                             "disabled": false,
                             "hidden": false,
-                            "label": "Enable authentication for the logs page:",
-                            "helpers": ["Enable authentication for the homepage showing the logs."],
+                            "label": "Enable authentication for the services page:",
+                            "helpers": ["Enable authentication for the homepage showing the services."],
                             "hideInitValidationError": false,
                             "focus": false,
                             "optionLabels": [" True", " False"],
-                            "name": "logsEnabled",
+                            "name": "servicesEnabled",
                             "typeahead": {},
                             "allowOptionalEmpty": false,
                             "data": {},

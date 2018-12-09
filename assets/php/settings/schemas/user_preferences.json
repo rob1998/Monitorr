@@ -25,16 +25,16 @@
             "default": "master",
             "properties": {}
         },
-        "registration": {
+        "offlineServicesFirst": {
             "type": "string",
-            "title": "registration",
+            "title": "offlineServicesFirst",
             "enum": [
-                "Enable",
-                "Disable"
+                "True",
+                "False"
             ],
             "required": true,
             "pattern": {},
-            "default": "Enable",
+            "default": "False",
             "properties": {}
         },
         "timezone": {

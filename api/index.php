@@ -19,12 +19,14 @@ $result['request'] = key($_GET);
 $result['params'] = $_POST;
 //</editor-fold>
 
+$referredByHomepage = true; //TODO or request is coming from homepage (necessary if user if not logged in)
+
 //<editor-fold desc="API functions">
 switch ($function) {
 	case 'v1_getPing':
 		switch ($method) {
 			case 'POST':
-                if(checkAuthorization()) {
+                if(checkAuthorization() || $referredByHomepage) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $service = $_POST['service'];
@@ -119,7 +121,7 @@ switch ($function) {
 	case 'v1_services_get_offline':
 		switch ($method) {
 			case 'GET':
-				if(checkAuthorization()) {
+				if(checkAuthorization() || $referredByHomepage) {
 					$result['status'] = 'success';
 					$result['statusText'] = 'success';
 					$result['data'] = getOfflineServices();

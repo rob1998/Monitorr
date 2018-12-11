@@ -2,15 +2,20 @@
 
 let nIntervId = [];
 let logInterval = false;
-let autoUpdateOverwrite = false;
+let editMode = false;
 
 $(function () {
     //fade-in effect
     $('body').removeClass('fade-out');
 
+    if(editMode) {
+        $("#statusloop").sortable();
+        $("#sortable").disableSelection();
+    }
+
     //open service link in new tab
     $('.servicetile').on("click", function () {
-        if(!$(this).hasClass("nolink")) {
+        if(!$(this).hasClass("nolink") && !editMode) {
             let win = window.open($(this).data("location"), '_blank');
             win.focus();
         }
@@ -40,7 +45,7 @@ $(function () {
     //close modal when clicked next to it
     $(document).mouseup(function(e)
     {
-        var container = $("#plugin-modal");
+        const container = $("#plugin-modal");
         // if the target of the click isn't the container nor a descendant of the container
         if (!container.is(e.target) && container.has(e.target).length === 0) container.fadeOut("slow");
     });
@@ -231,7 +236,6 @@ function ping(service) {
         data: {'service': service.serviceTitle},
         dataType: "json",
         success: function(response){
-            console.log(response);
             let $pingTime = response.data;
             let $serviceElement = $("#service-" + service.serviceTitle.replace(/ /g, "-"));
             let $pingClassElement = $("#pingindicator-" + service.serviceTitle.replace(/ /g, "-") + " > div");
@@ -300,43 +304,43 @@ function getSystemBadges() {
         type: "GET",
         success: function (response) {
             let data = JSON.parse(response).data;
+            if(data != null) {
+                //<editor-fold desc="values">
+                $("#cpu > .value").text(data.serverLoad + "%");
+                $("#ram > .value").text(data.ramPercentage + "%");
+                $("#uptime > .value").text(data.totalUptime);
+                $("#ping > .value").text(data.pingTime + "ms");
+                if(data.disk1Usage != "?") {
+                    $("#hdpercent1").show();
+                    $("#hdlabel1").show();
+                    $("#hdpercent1").text(data.disk1Usage + "%");
+                } else {
+                    $("#hdpercent1").hide();
+                    $("#hdlabel1").hide();
+                }
+                if(data.disk2Usage != "?") {
+                    $("#hdpercent2").show();
+                    $("#hdlabel2").show();
+                    $("#hdpercent2").text(data.disk2Usage + "%");
+                } else {
+                    $("#hdpercent2").hide();
+                    $("#hdlabel2").hide();
+                }
+                if(data.disk3Usage != "?") {
+                    $("#hdpercent3").show();
+                    $("#hdlabel3").show();
+                    $("#hdpercent3").text(data.disk3Usage + "%");
+                } else {
+                    $("#hdpercent3").hide();
+                    $("#hdlabel3").hide();
+                }
+                //</editor-fold>
 
-            //<editor-fold desc="values">
-            $("#cpu > .value").text(data.serverLoad + "%");
-            $("#ram > .value").text(data.ramPercentage + "%");
-            $("#uptime > .value").text(data.totalUptime);
-            $("#ping > .value").text(data.pingTime + "ms");
-            if(data.disk1Usage != "?") {
-                $("#hdpercent1").show();
-                $("#hdlabel1").show();
-                $("#hdpercent1").text(data.disk1Usage + "%");
-            } else {
-                $("#hdpercent1").hide();
-                $("#hdlabel1").hide();
-            }
-            if(data.disk2Usage != "?") {
-                $("#hdpercent2").show();
-                $("#hdlabel2").show();
-                $("#hdpercent2").text(data.disk2Usage + "%");
-            } else {
-                $("#hdpercent2").hide();
-                $("#hdlabel2").hide();
-            }
-            if(data.disk3Usage != "?") {
-                $("#hdpercent3").show();
-                $("#hdlabel3").show();
-                $("#hdpercent3").text(data.disk3Usage + "%");
-            } else {
-                $("#hdpercent3").hide();
-                $("#hdlabel3").hide();
-            }
-            //</editor-fold>
-
-            //<editor-fold desc="classes">
-            //<editor-fold desc="cpu class">
-                var cpuok = settings.cpuok;
-                var cpuwarn = settings.cpuwarn;
-                var cpuClass;
+                //<editor-fold desc="classes">
+                //<editor-fold desc="cpu class">
+                const cpuok = settings.cpuok;
+                const cpuwarn = settings.cpuwarn;
+                let cpuClass;
                 if (data.serverLoad < cpuok) {
                     cpuClass = 'success';
                 } else if ((data.serverLoad >= cpuok) && (data.serverLoad < cpuwarn)) {
@@ -345,12 +349,12 @@ function getSystemBadges() {
                     cpuClass = 'danger';
                 }
                 $("#cpu > span:first").addClass(cpuClass);
-            //</editor-fold>
+                //</editor-fold>
 
-            //<editor-fold desc="ram class">
-                var ramok = settings.ramok;
-                var ramwarn = settings.ramwarn;
-                var ramClass;
+                //<editor-fold desc="ram class">
+                const ramok = settings.ramok;
+                const ramwarn = settings.ramwarn;
+                let ramClass;
                 if (data.ramPercentage < ramok) {
                     ramClass = 'success';
                 } else if ((data.ramPercentage >= ramok) && (data.ramPercentage < ramwarn)) {
@@ -359,12 +363,12 @@ function getSystemBadges() {
                     ramClass = 'danger';
                 }
                 $("#ram > span:first").addClass(ramClass);
-            //</editor-fold>
+                //</editor-fold>
 
-            //<editor-fold desc="ping class">
-                var pingok = settings.pingok;
-                var pingwarn = settings.pingwarn;
-                var pingClass;
+                //<editor-fold desc="ping class">
+                const pingok = settings.pingok;
+                const pingwarn = settings.pingwarn;
+                let pingClass;
                 if(data.pingTime == "?") pingClass =  'danger';
                 else if (data.pingTime < pingok) {
                     pingClass = 'success';
@@ -374,27 +378,27 @@ function getSystemBadges() {
                     pingClass = 'danger';
                 }
                 $("#ping > span:first").addClass(pingClass);
-            //</editor-fold>
+                //</editor-fold>
 
-            //<editor-fold desc="disk classes">
-                var diskok = settings.hdok;
-                var diskwarn = settings.hdwarn;
+                //<editor-fold desc="disk classes">
+                const diskok = settings.hdok;
+                const diskwarn = settings.hdwarn;
                 if(data.disk1Usage != "?") {
                     //<editor-fold desc="disk1 class">
-                        var disk1Class;
-                        if (data.disk1Usage < diskok) {
-                            disk1Class = 'success';
-                        } else if ((data.disk1Usage >= diskok) && (data.disk1Usage < diskwarn)) {
-                            disk1Class = 'warning';
-                        } else {
-                            disk1Class = 'danger';
-                        }
-                        $("#hdlabel1").addClass(disk1Class);
+                    let disk1Class;
+                    if (data.disk1Usage < diskok) {
+                        disk1Class = 'success';
+                    } else if ((data.disk1Usage >= diskok) && (data.disk1Usage < diskwarn)) {
+                        disk1Class = 'warning';
+                    } else {
+                        disk1Class = 'danger';
+                    }
+                    $("#hdlabel1").addClass(disk1Class);
                     //</editor-fold>
                 }
                 if(data.disk2Usage != "?") {
                     //<editor-fold desc="disk2 class">
-                    var disk2Class;
+                    let disk2Class;
                     if (data.disk2Usage < diskok) {
                         disk2Class = 'success';
                     } else if ((data.disk2Usage >= diskok) && (data.disk2Usage < diskwarn)) {
@@ -407,7 +411,7 @@ function getSystemBadges() {
                 }
                 if(data.disk3Usage != "?") {
                     //<editor-fold desc="disk3 class">
-                    var disk3Class;
+                    let disk3Class;
                     if (data.disk3Usage < diskok) {
                         disk3Class = 'success';
                     } else if ((data.disk3Usage >= diskok) && (data.disk3Usage < diskwarn)) {
@@ -418,8 +422,9 @@ function getSystemBadges() {
                     $("#hdlabel3").addClass(disk3Class);
                     //</editor-fold>
                 }
-            //</editor-fold>
-            //</editor-fold>
+                //</editor-fold>
+                //</editor-fold>
+            }
         }
     });
 }
@@ -470,7 +475,7 @@ function refreshConfig(updateServices) {
 }
 
 function syncServerTime() {
-    console.log('Monitorr time update START | Interval: ' + settings.rftime + ' ms');
+    /*console.log('Monitorr time update START | Interval: ' + settings.rftime + ' ms');
     $.ajax({
         url: "assets/php/time.php",
         type: "GET",
@@ -488,7 +493,8 @@ function syncServerTime() {
         error: function (jqXHR, textStatus, errorThrown) {
             console.log('Monitorr time update START');
         }
-    });
+    });*/
+    // TODO: create API call for this one
 }
 function parseGithubToHTML(result) {
 
@@ -508,9 +514,9 @@ function parseGithubToHTML(result) {
     result = result.replace(/(https:\/\/github.com\/Monitorr\/Monitorr\/issues\/(\d*))/g, '<a class="releaselink" href="$1" title="GitHub Issue" target="_blank">#$2</a>'); // convert issue links
     result = result.replace(/\s(https?:\/\/?[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|])/g, '<a class="releaselink" href="$1" target="_blank">$1</a>'); // convert normal links
 
-    var addItems = [];
-    var fixItems = [];
-    var changeItems = [];
+    const addItems = [];
+    const fixItems = [];
+    const changeItems = [];
 
 
     result = result.replace(/(?:<br \/>)*\d+\.\s*ADD: (.*)/gi, function (s, match) {
@@ -530,20 +536,17 @@ function parseGithubToHTML(result) {
         result += "<ol>";
     }
 
-    var i = 0;
-    for (i = 0; i < addItems.length; i++) {
+    for (let i = 0; i < addItems.length; i++) {
         result += "<li><i class='fa fa-plus'></i> ADD: " + addItems[i] + "</li>";
         if (i == addItems.length - 1 && i != 0) result += "<br>";
     }
 
-    var i = 0;
-    for (i = 0; i < fixItems.length; i++) {
+    for (let i = 0; i < fixItems.length; i++) {
         result += "<li><i class='fa fa-wrench'></i> FIX: " + fixItems[i] + "</li>";
         if (i == fixItems.length - 1 && i != 0) result += "<br>";
     }
 
-    var i = 0;
-    for (i = 0; i < changeItems.length; i++) {
+    for (let i = 0; i < changeItems.length; i++) {
         result += "<li><i class='fa fa-lightbulb'></i> CHANGE: " + changeItems[i] + "</li>";
     }
 

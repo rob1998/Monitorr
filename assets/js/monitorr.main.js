@@ -1,17 +1,15 @@
 'use strict';
 
 let nIntervId = [];
-let logInterval = false;
+//let logInterval = false;
+let nIntervId2;
 let editMode = false;
+let current_rfsysinfo;
 
 $(function () {
     //fade-in effect
     $('body').removeClass('fade-out');
 
-    if(editMode) {
-        $("#statusloop").sortable();
-        $("#sortable").disableSelection();
-    }
 
     //open service link in new tab
     $('.servicetile').on("click", function () {
@@ -32,6 +30,27 @@ $(function () {
                 let $html = response.data;
                 $("#plugin-modal").html($html);
                 $("#plugin-modal").fadeIn("slow");
+            }
+        });
+    });
+
+    $(document).on('click','#save-order-btn',function(e) {
+        //create order array;
+        let $order = [];
+        $("#statusloop > div").each(function () {
+            $order.push($( this ).data("order"));
+        });
+        console.log($order);
+        $.ajax({
+            type: "POST",
+            url: "/api/?v1/services/sort/custom",
+            data: {'order': $order},
+            dataType: "json",
+            success: function (response) {
+                console.log(response);
+                if(response.data === "success") {
+                    notify("Success!", "Order saved");
+                }
             }
         });
     });
@@ -87,6 +106,39 @@ $(function () {
     });
 
     refreshConfig(true);
+
+    //sortable
+    $("#edit-mode-toggle :checkbox").change(function () {
+        let $statusloop = $("#statusloop");
+        editMode = ($(this).is(':checked'));
+        if(editMode) {
+            $statusloop.sortable();
+            $statusloop.disableSelection();
+            $statusloop.sortable("enable");
+            $("#save-order-btn").removeClass("hidden");
+        } else {
+            $statusloop.sortable("disable");
+            $("#save-order-btn").addClass("hidden");
+        }
+    });
+
+    // Auto update services and offline marquee
+    $("#auto-update-toggle :checkbox").change(function () {
+
+        var current = -1;
+        var onload;
+
+        if ($(this).is(':checked')) {
+            updateSummary();
+            statusCheck();
+            nIntervId2 = setInterval(updateSummary, settings.rfsysinfo);
+            notify("Auto refresh: Enabled | Interval: " +  settings.rfsysinfo + " ms");
+        } else {
+            clearInterval(nIntervId2);
+            notify("Auto refresh: Disabled");
+        }
+    });
+    $('#auto-update-toggle :checkbox').attr('checked', 'checked').change();
 });
 
 function sortServicesAlphabetically(){
@@ -250,17 +302,21 @@ function ping(service) {
 
                 $pingClassElement.prop('title', "Ping response time: unresponsive");
 
-                $btnStatus.removeClass("btnonline");
-                $btnStatus.addClass("btnoffline");
-                $btnStatus.text("Offline");
+                if($serviceElement.attr("data-offline") === "false") {
+                    $btnStatus.removeClass("btnonline");
+                    $btnStatus.addClass("btnoffline");
+                    $btnStatus.text("Offline");
 
-                $serviceElement.find(".servicetile").addClass("offline");
-                $serviceElement.find(".servicetitle").addClass("offline");
-                $serviceElement.find(".serviceimg").addClass("offline");
+                    $serviceElement.find(".servicetile").addClass("offline");
+                    $serviceElement.find(".servicetitle").addClass("offline");
+                    $serviceElement.find(".serviceimg").addClass("offline");
+                    $serviceElement.attr("data-offline", "true");
 
-                if(preferences.offlineServicesFirst == "True") {
-                    $($serviceElement).parent().prepend($serviceElement);
+                    if(preferences.offlineServicesFirst === "True") {
+                        $($serviceElement).parent().prepend($serviceElement);
+                    }
                 }
+
             } else {
 
                 let $pingok = settings.pingok;
@@ -286,9 +342,23 @@ function ping(service) {
                 $btnStatus.addClass("btnonline");
                 $btnStatus.text("Online");
 
-                $serviceElement.find(".servicetile").removeClass("offline");
-                $serviceElement.find(".servicetitle").removeClass("offline");
-                $serviceElement.find(".serviceimg").removeClass("offline");
+                if($serviceElement.attr("data-offline") === "true") {
+
+                    $serviceElement.find(".servicetile").removeClass("offline");
+                    $serviceElement.find(".servicetitle").removeClass("offline");
+                    $serviceElement.find(".serviceimg").removeClass("offline");
+                    $serviceElement.attr("data-offline", "false");
+
+                    if(preferences.offlineServicesFirst === "True") {
+                        let order = $($serviceElement).data("order");
+                        let n = order-1;
+                        let $nextElement = $("#statusloop div[data-order='" + n + "']");
+                        while($($nextElement).data("offline") === "true") {
+                            n++;
+                        }
+                        $($serviceElement).insertAfter($($nextElement));
+                    }
+                }
             }
         }
     });
@@ -447,23 +517,21 @@ function refreshConfig(updateServices) {
                 }, settings.rfconfig); //delay is rftime
 
 
-                $("#auto-update-status").attr("data-enabled", settings.logRefresh);
+                let $autoUpdateToggle = $("#auto-update-toggle input");
 
-                if (updateServices) {
-                    if (settings.logRefresh == "true" && (logInterval == false || settings.rflog != current_rflog)) {
+                if (updateServices || $($autoUpdateToggle).attr("checked") === "checked") {
+                    if ($($autoUpdateToggle).attr("checked") === "checked" && (settings.rfsysinfo !== current_rfsysinfo)) {
                         clearInterval(nIntervId);
-                        nIntervId = setInterval(refreshblockUI, settings.rflog);
-                        logInterval = true;
-                        $("#autoUpdateSlider").attr("data-enabled", "true");
-                        current_rflog = settings.rflog;
+                        nIntervId = setInterval(checkServices, settings.rfsysinfo);
+                        $($autoUpdateToggle).attr("checked", "checked");
+                        current_rfsysinfo = settings.rfsysinfo;
                         console.log("Auto update: Enabled | Interval: " + settings.rflog + " ms");
-                        $.growlUI("Auto update: Enabled");
-                    } else if (settings.logRefresh == "false" && logInterval == true) {
+                        notify("Auto update:", "Enabled");
+                    } else if (settings.logRefresh === "false" && logInterval === true) {
                         clearInterval(nIntervId);
-                        logInterval = false;
-                        $("#autoUpdateSlider").attr("data-enabled", "false");
+                        $($autoUpdateToggle).attr("checked", "");
                         console.log("Auto update: Disabled");
-                        $.growlUI("Auto update: Disabled");
+                        notify("Auto update:", "Disabled");
                     }
                 }
 
@@ -604,4 +672,29 @@ function load_plugins() {
     document.getElementById("includedContent").innerHTML = '<object type="text/html" class="object" data="assets/php/settings/plugins.php" ></object>';
     $(".sidebar-nav-item").removeClass('active');
     $("li[data-item='plugins']").addClass("active");
+}
+
+function notify(title, content) {
+
+    toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": false,
+        "positionClass": "toast-bottom-left",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "5000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    }
+
+    toastr["success"](title, content);
+
+    console.log(title + " " + content);
 }

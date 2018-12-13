@@ -35,6 +35,16 @@ function checkAuthorization(){
     return ((!empty($_SESSION['user_name']) && ($_SESSION['user_is_logged_in'])) || (isset($_GET['apikey']) && ($_GET['apikey'] == $GLOBALS['monitorrAPI'])));
 }
 
+function sortServicesCustom($orderArray) {
+	$newServicesOrder = array();
+	foreach ($orderArray as $newKey => $oldKey) {
+		$newServicesOrder[$newKey] = $GLOBALS["services"][$oldKey];
+	}
+	$config = json_decode($GLOBALS['configJSON'],1);
+	$config["services"] = $newServicesOrder;
+	return file_put_contents($GLOBALS['config_file'], json_encode($config, JSON_PRETTY_PRINT));
+}
+
 function sortServicesAlphabetically() {
 	$config = json_decode($GLOBALS['configJSON'],1);
 	$servicesArr = $GLOBALS["services"];

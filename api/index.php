@@ -72,7 +72,7 @@ switch ($function) {
 	case 'v1_getSystemBadges':
 		switch ($method) {
 			case 'GET':
-				if(checkAuthorization()) {
+				if(checkAuthorization() || $referredByHomepage) {
 					$result['status'] = 'success';
 					$result['statusText'] = 'success';
 					$ping = ping($GLOBALS['settings']['pinghost'] . ":" . $GLOBALS['settings']['pingport']);
@@ -163,6 +163,25 @@ switch ($function) {
 					$result['status'] = 'success';
 					$result['statusText'] = 'success';
 					$result['data'] = sortServicesAlphabetically();
+				} else {
+					$result['status'] = 'error';
+					$result['statusText'] = 'API/Token invalid or not set';
+					$result['data'] = null;
+				}
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
+	case 'v1_services_sort_custom':
+		switch ($method) {
+			case 'POST':
+				if(checkAuthorization()) {
+					$result['status'] = 'success';
+					$result['statusText'] = 'success';
+					$result['data'] = sortServicesCustom($_POST["order"]);
 				} else {
 					$result['status'] = 'error';
 					$result['statusText'] = 'API/Token invalid or not set';

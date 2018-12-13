@@ -107,7 +107,7 @@ https://github.com/Monitorr/Monitorr
         </div>
 
         <div id="toggles">
-            <div id="auto-update-toggle" class="toggle" title="Toggle auto-refresh. Interval: <?php echo $rfsysinfo; ?> ms ">
+            <div id="auto-update-toggle" class="toggle" title="Toggle auto-refresh. Interval: <?php echo $GLOBALS["settings"]["rfsysinfo"]; ?> ms ">
                 <span>Auto Refresh:</span>
                 <label class="switch" id="buttonStart">
                     <input type="checkbox">

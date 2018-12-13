@@ -236,7 +236,7 @@ class OneFileLoginApplication
 			//check which page we're on
 			$urlParts = explode("/", strtok($_SERVER["REQUEST_URI"], '?'));
 			$currentPage = strtok(end($urlParts), ".");
-			if (($currentPage == "index" || $currentPage == "") && $GLOBALS['authentication']['logsEnabled'] == "true") {
+			if (($currentPage == "index" || $currentPage == "") && $GLOBALS['authentication']['servicesEnabled'] == "true") {
 				// show "page", according to user's login status
 				if ($this->getUserLoginStatus()) {
 					return true;

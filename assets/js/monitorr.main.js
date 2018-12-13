@@ -1,7 +1,6 @@
 'use strict';
 
 let nIntervId = [];
-//let logInterval = false;
 let nIntervId2;
 let editMode = false;
 let current_rfsysinfo;
@@ -19,6 +18,7 @@ $(function () {
         }
     });
 
+    //<editor-fold desc="onClick actions">
     //<editor-fold desc="onClick actions">
     $(document).on('click','.plugin-settings-button',function(e) {
         $.ajax({
@@ -105,7 +105,6 @@ $(function () {
         });
     });
 
-    refreshConfig(true);
 
     //sortable
     $("#edit-mode-toggle :checkbox").change(function () {
@@ -124,16 +123,17 @@ $(function () {
 
     // Auto update services and offline marquee
     $("#auto-update-toggle :checkbox").change(function () {
-
-        var current = -1;
-        var onload;
-
         if ($(this).is(':checked')) {
+            refreshConfig();
             updateSummary();
             statusCheck();
-            nIntervId2 = setInterval(updateSummary, settings.rfsysinfo);
+            nIntervId["refreshConfig"] = setInterval(updateSummary, settings.rfconfig);
+            nIntervId["updateSummary"] = setInterval(updateSummary, settings.rfsysinfo);
+            nIntervId2 = setInterval(statusCheck, settings.rfsysinfo);
             notify("Auto refresh: Enabled | Interval: " +  settings.rfsysinfo + " ms");
         } else {
+            clearInterval(nIntervId["refreshConfig"]);
+            clearInterval(nIntervId["updateSummary"]);
             clearInterval(nIntervId2);
             notify("Auto refresh: Disabled");
         }
@@ -231,7 +231,6 @@ function statusCheck(override) {
         console.log('Service check START | Interval: ' + settings.rfsysinfo + ' ms');
         getSystemBadges();
         checkServices();
-        setTimeout(statusCheck, settings.rfsysinfo);
     }
 
 }
@@ -499,7 +498,7 @@ function getSystemBadges() {
     });
 }
 
-function refreshConfig(updateServices) {
+function refreshConfig() {
     $.ajax({
         url: "api/?v1/settings/get",
         type: "GET",
@@ -511,30 +510,6 @@ function refreshConfig(updateServices) {
                 settings = $data.settings;
                 preferences = $data.preferences;
                 services = $data.services;
-
-                setTimeout(function () {
-                    refreshConfig()
-                }, settings.rfconfig); //delay is rftime
-
-
-                let $autoUpdateToggle = $("#auto-update-toggle input");
-
-                if (updateServices || $($autoUpdateToggle).attr("checked") === "checked") {
-                    if ($($autoUpdateToggle).attr("checked") === "checked" && (settings.rfsysinfo !== current_rfsysinfo)) {
-                        clearInterval(nIntervId);
-                        nIntervId = setInterval(checkServices, settings.rfsysinfo);
-                        $($autoUpdateToggle).attr("checked", "checked");
-                        current_rfsysinfo = settings.rfsysinfo;
-                        console.log("Auto update: Enabled | Interval: " + settings.rfsysinfo + " ms");
-                        notify("Auto update:", "Enabled");
-                    } else {
-                        clearInterval(nIntervId);
-                        $($autoUpdateToggle).attr("checked", "");
-                        console.log("Auto update: Disabled");
-                        notify("Auto update:", "Disabled");
-                    }
-                }
-
                 document.title = preferences.sitetitle; //update page title to configured title
                 //console.log('Refreshed config variables');
             }
@@ -694,7 +669,7 @@ function notify(title, content) {
         "hideMethod": "fadeOut"
     }
 
-    toastr["success"](title, content);
+    toastr["success"](content, title);
 
     console.log(title + " " + content);
 }

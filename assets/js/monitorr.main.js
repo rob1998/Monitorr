@@ -525,9 +525,9 @@ function refreshConfig(updateServices) {
                         nIntervId = setInterval(checkServices, settings.rfsysinfo);
                         $($autoUpdateToggle).attr("checked", "checked");
                         current_rfsysinfo = settings.rfsysinfo;
-                        console.log("Auto update: Enabled | Interval: " + settings.rflog + " ms");
+                        console.log("Auto update: Enabled | Interval: " + settings.rfsysinfo + " ms");
                         notify("Auto update:", "Enabled");
-                    } else if (settings.logRefresh === "false" && logInterval === true) {
+                    } else {
                         clearInterval(nIntervId);
                         $($autoUpdateToggle).attr("checked", "");
                         console.log("Auto update: Disabled");

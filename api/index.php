@@ -36,7 +36,7 @@ switch ($function) {
                     if(!$result['data']) {
 	                    file_put_contents(__DIR__ . "/../assets/data/logs/" . $service . ".json", $service . " is offline since " . date("h:i:sa"));
                     } else {
-	                    if(file_exists(__DIR__ . "/../data/logs/" . $service . ".json")) unlink(__DIR__ . "/../data/logs/" . $service . ".json");
+	                    if(file_exists(__DIR__ . "/../assets/data/logs/" . $service . ".json")) unlink(__DIR__ . "/../assets/data/logs/" . $service . ".json");
                     }
                 } else {
                     $result['status'] = 'error';

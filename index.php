@@ -69,7 +69,7 @@ https://github.com/Monitorr/Monitorr
     <script src="assets/data/custom.js"></script>
 </head>
 
-<body onload="showpace()" class="fade-out">
+<body onload="showpace()" class="fade-out <?php if(isset($_GET['min'])) echo "minimal";?>">
 
 
 <!-- Append marquee alert if service is down: -->

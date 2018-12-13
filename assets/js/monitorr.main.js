@@ -12,7 +12,7 @@ $(function () {
 
     //open service link in new tab
     $('.servicetile').on("click", function () {
-        if(!$(this).hasClass("nolink") && !editMode) {
+        if (!$(this).hasClass("nolink") && !editMode) {
             let win = window.open($(this).data("location"), '_blank');
             win.focus();
         }
@@ -20,7 +20,7 @@ $(function () {
 
     //<editor-fold desc="onClick actions">
     //<editor-fold desc="onClick actions">
-    $(document).on('click','.plugin-settings-button',function(e) {
+    $(document).on('click', '.plugin-settings-button', function (e) {
         $.ajax({
             type: "POST",
             url: "/api/?v1/formBuilder/settingsForm/plugin",
@@ -34,11 +34,11 @@ $(function () {
         });
     });
 
-    $(document).on('click','#save-order-btn',function(e) {
+    $(document).on('click', '#save-order-btn', function (e) {
         //create order array;
         let $order = [];
         $("#statusloop > div").each(function () {
-            $order.push($( this ).data("order"));
+            $order.push($(this).data("order"));
         });
         console.log($order);
         $.ajax({
@@ -48,37 +48,37 @@ $(function () {
             dataType: "json",
             success: function (response) {
                 console.log(response);
-                if(response.data === "success") {
+                if (response.data === "success") {
                     notify("Success!", "Order saved");
                 }
             }
         });
     });
 
-    $(document).on('click','.plugin-page-button',function(e) {
-        $("#plugin-modal").html("");
-        $("#plugin-modal").html('<object type="text/html" class="object" data="../../plugins/' + $(this).data("plugin") + "/" + $(this).data("page") + '" ></object>');
-        $("#plugin-modal").fadeIn("slow");
+    $(document).on('click', '.plugin-page-button', function (e) {
+        let $pluginModal = $("#plugin-modal");
+        $pluginModal.html("");
+        $pluginModal.html('<object type="text/html" class="object" data="../../plugins/' + $(this).data("plugin") + "/" + $(this).data("page") + '" ></object>');
+        $pluginModal.fadeIn("slow");
     });
 
     //close modal when clicked next to it
-    $(document).mouseup(function(e)
-    {
+    $(document).mouseup(function (e) {
         const container = $("#plugin-modal");
         // if the target of the click isn't the container nor a descendant of the container
         if (!container.is(e.target) && container.has(e.target).length === 0) container.fadeOut("slow");
     });
     //</editor-fold>
 
-    $(document).on('submit','#plugin-settings',function(e) {
+    $(document).on('submit', '#plugin-settings', function (e) {
         e.preventDefault();
 
         let $plugin = $(this).data("plugin");
         let $formData = $(this).serializeArray();
 
-        $('#plugin-settings input[type="checkbox"]').each(function(){
-            if( $(this).is(":checked")){
-                let objIndex = $formData.findIndex((obj => obj.name == this.name));
+        $('#plugin-settings input[type="checkbox"]').each(function () {
+            if ($(this).is(":checked")) {
+                let objIndex = $formData.findIndex((obj => obj.name === this.name));
                 $formData[objIndex].value = true;
             } else {
                 $formData.push({name: this.name, value: false});
@@ -87,16 +87,18 @@ $(function () {
 
         //rewrite to key->value array
         let $result = {};
-        $formData.forEach(function(item) {
+        $formData.forEach(function (item) {
             $result[item.name] = item.value;
         });
 
         $.ajax({
             type: "POST",
             url: "/api/?v1/settings/update",
-            data: {'plugins': {
+            data: {
+                'plugins': {
                     [$plugin]: $result
-                }},
+                }
+            },
             dataType: "json",
             success: function (response) {
                 console.log("response");
@@ -110,10 +112,11 @@ $(function () {
     $("#edit-mode-toggle :checkbox").change(function () {
         let $statusloop = $("#statusloop");
         editMode = ($(this).is(':checked'));
-        if(editMode) {
+        if (editMode) {
             $statusloop.sortable();
             $statusloop.disableSelection();
             $statusloop.sortable("enable");
+            $('#auto-update-toggle :checkbox').removeAttr('checked');
             $("#save-order-btn").removeClass("hidden");
         } else {
             $statusloop.sortable("disable");
@@ -130,7 +133,7 @@ $(function () {
             nIntervId["refreshConfig"] = setInterval(updateSummary, settings.rfconfig);
             nIntervId["updateSummary"] = setInterval(updateSummary, settings.rfsysinfo);
             nIntervId2 = setInterval(statusCheck, settings.rfsysinfo);
-            notify("Auto refresh: Enabled | Interval: " +  settings.rfsysinfo + " ms");
+            notify("Auto refresh: Enabled | Interval: " + settings.rfsysinfo + " ms");
         } else {
             clearInterval(nIntervId["refreshConfig"]);
             clearInterval(nIntervId["updateSummary"]);
@@ -141,7 +144,7 @@ $(function () {
     $('#auto-update-toggle :checkbox').attr('checked', 'checked').change();
 });
 
-function sortServicesAlphabetically(){
+function sortServicesAlphabetically() {
     $.ajax({
         type: 'GET',
         url: '../../../api/?v1/services/sort/alphabetically',
@@ -175,7 +178,7 @@ function updateSummary() {
         success: function (response) {
             if (response.status === "success") {
                 let $result = response.data;
-                if($result.length === 0) {
+                if ($result.length === 0) {
                     $("#summary").hide();
                 } else {
                     $("#summary").fadeOut(function () {
@@ -197,26 +200,26 @@ function updateSummary() {
     });
 }
 
-function createPluginList(element){
+function createPluginList(element) {
     $.ajax({
         type: "GET",
         url: "/api/?v1/getPlugins",
         dataType: "json",
-        success: function(response){
-            if(response.data.length == 0){
+        success: function (response) {
+            if (response.data.length == 0) {
                 $(element).html("No plugins found");
             } else {
                 let $html = "";
-                for(let i = 0; i<response.data.length; i++) {
+                for (let i = 0; i < response.data.length; i++) {
                     let $plugin = response.data[i];
                     let $imgUrl = "../../plugins/" + $plugin.name + "/" + $plugin.image;
                     $html += "<div class='plugin-box'>";
-                    $html +=    "<img src='" + $imgUrl + "'>";
-                    $html +=    "<h3>" + $plugin.name + "</h3>";
-                    $html +=    "<div class='plugin-box-overlay'>";
-                    $html +=        "<a class='btn plugin-overlay-button plugin-page-button' data-plugin='" + $plugin.name + "' data-page='" + $plugin.page + "'><i class='icon fas fa-file-alt'></i></a>";
-                    $html +=        "<a class='btn plugin-overlay-button plugin-settings-button' data-plugin='" + $plugin.name + "'><i class='icon fas fa-cogs'></i></a>";
-                    $html +=    "</div>";
+                    $html += "<img src='" + $imgUrl + "'>";
+                    $html += "<h3>" + $plugin.name + "</h3>";
+                    $html += "<div class='plugin-box-overlay'>";
+                    $html += "<a class='btn plugin-overlay-button plugin-page-button' data-plugin='" + $plugin.name + "' data-page='" + $plugin.page + "'><i class='icon fas fa-file-alt'></i></a>";
+                    $html += "<a class='btn plugin-overlay-button plugin-settings-button' data-plugin='" + $plugin.name + "'><i class='icon fas fa-cogs'></i></a>";
+                    $html += "</div>";
                     $html += "</div>";
                 }
                 $(element).html($html);
@@ -237,31 +240,39 @@ function statusCheck(override) {
 
 function checkServices() {
     let titleArray = [];
-    for(let i = 0; i<services.length; i++) {
+    for (let i = 0; i < services.length; i++) {
         let $service = services[i];
         let $serviceDiv = $('#service-' + $service.serviceTitle.replace(/ /g, "-"));
 
-        if ( $serviceDiv.length){
+        if ($serviceDiv.length) {
+            $serviceDiv.attr("data-order", i);
             ping($service);
         } else {
             let html = "";
-            html += "<div id=\"service-" + $service.serviceTitle.replace(/ /g, "-") + "\"  class=\"col-lg-4\" >";
+            html += "<div id=\"service-" + $service.serviceTitle.replace(/ /g, "-") + "\"  class=\"col-lg-4\" data-order='" + i + "' data-offline='false'>";
             html += "   <div id=\"pingindicator-" + $service.serviceTitle.replace(/ /g, "-") + "\" class='pingindicator' >";
             html += "       <div class=\"pingcircle\"></div>";
             html += "   </div>";
-            if($service.link == "Yes"){
+            if ($service.link == "Yes") {
                 html += "   <div class=\"servicetile\" data-location=\"" + $service.linkurl + "\" style=\"display: block\">";
             } else {
                 html += "   <div class=\"servicetile nolink\" data-location=\"" + $service.linkurl + "\" style=\"display: block\">";
             }
             html += "       <img id=\"" + $service.serviceTitle.replace(/ /g, "-") + "-service-img\" src=\"assets/img/" + $service.image + "\" class=\"serviceimg\" alt='" + $service.serviceTitle + "'>";
             html += "       <div class=\"servicetitle\">";
-            html +=             $service.serviceTitle;
+            html += $service.serviceTitle;
             html += "       </div>";
             html += "       <div id=\"status-" + $service.serviceTitle.replace(/ /g, "-") + "\">Loading</div>";
             html += "   </div>";
             html += "</div>";
-            $("#statusloop").append(html);
+
+            // INSERT AT CORRECT POSITION
+            let n = order - 1;
+            let $nextElement = $("#statusloop div[data-order='" + n + "']");
+            while ($($nextElement).data("offline") === "true") {
+                n++;
+            }
+            $(html).insertAfter($($nextElement));
             ping($service);
         }
         titleArray.push($service.serviceTitle);
@@ -270,13 +281,13 @@ function checkServices() {
     $("#statusloop > div").each(function () {
         let split = $(this).prop("id").split("-");
         let title;
-        if(split.length>2){
+        if (split.length > 2) {
             split.shift();
             title = split.join(" ");
         } else {
             title = split[1];
         }
-        if($.inArray(title, titleArray) == -1) $(this).remove();
+        if ($.inArray(title, titleArray) == -1) $(this).remove();
     });
 }
 
@@ -286,13 +297,13 @@ function ping(service) {
         url: "api/?v1/getPing",
         data: {'service': service.serviceTitle},
         dataType: "json",
-        success: function(response){
+        success: function (response) {
             let $pingTime = response.data;
             let $serviceElement = $("#service-" + service.serviceTitle.replace(/ /g, "-"));
             let $pingClassElement = $("#pingindicator-" + service.serviceTitle.replace(/ /g, "-") + " > div");
             let $btnStatus = $("#status-" + service.serviceTitle.replace(/ /g, "-"));
 
-            if(!$pingTime){
+            if (!$pingTime) {
 
                 $pingClassElement.removeClass("pinggreen");
                 $pingClassElement.removeClass("pingyellow");
@@ -301,7 +312,7 @@ function ping(service) {
 
                 $pingClassElement.prop('title', "Ping response time: unresponsive");
 
-                if($serviceElement.attr("data-offline") === "false") {
+                if ($serviceElement.attr("data-offline") === "false") {
                     $btnStatus.removeClass("btnonline");
                     $btnStatus.addClass("btnoffline");
                     $btnStatus.text("Offline");
@@ -311,7 +322,7 @@ function ping(service) {
                     $serviceElement.find(".serviceimg").addClass("offline");
                     $serviceElement.attr("data-offline", "true");
 
-                    if(preferences.offlineServicesFirst === "True") {
+                    if (preferences.offlineServicesFirst === "True") {
                         $($serviceElement).parent().prepend($serviceElement);
                     }
                 }
@@ -341,18 +352,18 @@ function ping(service) {
                 $btnStatus.addClass("btnonline");
                 $btnStatus.text("Online");
 
-                if($serviceElement.attr("data-offline") === "true") {
+                if ($serviceElement.attr("data-offline") === "true") {
 
                     $serviceElement.find(".servicetile").removeClass("offline");
                     $serviceElement.find(".servicetitle").removeClass("offline");
                     $serviceElement.find(".serviceimg").removeClass("offline");
                     $serviceElement.attr("data-offline", "false");
 
-                    if(preferences.offlineServicesFirst === "True") {
+                    if (preferences.offlineServicesFirst === "True") {
                         let order = $($serviceElement).data("order");
-                        let n = order-1;
+                        let n = order - 1;
                         let $nextElement = $("#statusloop div[data-order='" + n + "']");
-                        while($($nextElement).data("offline") === "true") {
+                        while ($($nextElement).data("offline") === "true") {
                             n++;
                         }
                         $($serviceElement).insertAfter($($nextElement));
@@ -373,13 +384,13 @@ function getSystemBadges() {
         type: "GET",
         success: function (response) {
             let data = JSON.parse(response).data;
-            if(data != null) {
+            if (data != null) {
                 //<editor-fold desc="values">
                 $("#cpu > .value").text(data.serverLoad + "%");
                 $("#ram > .value").text(data.ramPercentage + "%");
                 $("#uptime > .value").text(data.totalUptime);
                 $("#ping > .value").text(data.pingTime + "ms");
-                if(data.disk1Usage != "?") {
+                if (data.disk1Usage != "?") {
                     $("#hdpercent1").show();
                     $("#hdlabel1").show();
                     $("#hdpercent1").text(data.disk1Usage + "%");
@@ -387,7 +398,7 @@ function getSystemBadges() {
                     $("#hdpercent1").hide();
                     $("#hdlabel1").hide();
                 }
-                if(data.disk2Usage != "?") {
+                if (data.disk2Usage != "?") {
                     $("#hdpercent2").show();
                     $("#hdlabel2").show();
                     $("#hdpercent2").text(data.disk2Usage + "%");
@@ -395,7 +406,7 @@ function getSystemBadges() {
                     $("#hdpercent2").hide();
                     $("#hdlabel2").hide();
                 }
-                if(data.disk3Usage != "?") {
+                if (data.disk3Usage != "?") {
                     $("#hdpercent3").show();
                     $("#hdlabel3").show();
                     $("#hdpercent3").text(data.disk3Usage + "%");
@@ -438,7 +449,7 @@ function getSystemBadges() {
                 const pingok = settings.pingok;
                 const pingwarn = settings.pingwarn;
                 let pingClass;
-                if(data.pingTime == "?") pingClass =  'danger';
+                if (data.pingTime == "?") pingClass = 'danger';
                 else if (data.pingTime < pingok) {
                     pingClass = 'success';
                 } else if ((data.pingTime >= pingok) && (data.pingTime < pingwarn)) {
@@ -452,7 +463,7 @@ function getSystemBadges() {
                 //<editor-fold desc="disk classes">
                 const diskok = settings.hdok;
                 const diskwarn = settings.hdwarn;
-                if(data.disk1Usage != "?") {
+                if (data.disk1Usage != "?") {
                     //<editor-fold desc="disk1 class">
                     let disk1Class;
                     if (data.disk1Usage < diskok) {
@@ -465,7 +476,7 @@ function getSystemBadges() {
                     $("#hdlabel1").addClass(disk1Class);
                     //</editor-fold>
                 }
-                if(data.disk2Usage != "?") {
+                if (data.disk2Usage != "?") {
                     //<editor-fold desc="disk2 class">
                     let disk2Class;
                     if (data.disk2Usage < diskok) {
@@ -478,7 +489,7 @@ function getSystemBadges() {
                     $("#hdlabel2").addClass(disk2Class);
                     //</editor-fold>
                 }
-                if(data.disk3Usage != "?") {
+                if (data.disk3Usage != "?") {
                     //<editor-fold desc="disk3 class">
                     let disk3Class;
                     if (data.disk3Usage < diskok) {
@@ -505,7 +516,7 @@ function refreshConfig() {
         success: function (response) {
 
             let json = JSON.parse(response);
-            if(json.status === "success"){
+            if (json.status === "success") {
                 let $data = json.data;
                 settings = $data.settings;
                 preferences = $data.preferences;
@@ -539,6 +550,7 @@ function syncServerTime() {
     });*/
     // TODO: create API call for this one
 }
+
 function parseGithubToHTML(result) {
 
     result = result.replace(/\n/g, '<br />'); //convert line breaks

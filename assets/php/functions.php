@@ -1,20 +1,23 @@
 <?php
 include(__DIR__ . '/classes/Ping.php');
-
 if (!is_file(__DIR__ . '../../data/datadir.json')
 	|| file_get_contents(__DIR__ . '../../data/datadir.json') == ""
 	|| !key_exists("datadir", json_decode(file_get_contents(__DIR__ . '../../data/datadir.json'), 1))
-	|| !is_file(json_decode(file_get_contents(__DIR__ . '../../data/datadir.json'), 1)['datadir'] . 'config.json')
 ) {
-	//invalid/unset datadir, start configuration process
-	$_GET['action'] = 'config';
-	include_once(__DIR__ . '/auth_check.php');
-	exit();
+	$datadir = json_decode(file_get_contents(__DIR__ . '../../data/datadir.json'), 1)["datadir"];
+	if(!is_file($datadir . 'config.json')
+		&& is_file($datadir . 'user_preferences-data.json')) {
+		//no new config found, but old config. Attempt upgrade
+		updateConfig($datadir);
+	} else {
+		//invalid/unset datadir, start configuration process
+		$_GET['action'] = 'config';
+		include_once(__DIR__ . '/auth_check.php');
+		exit();
+	}
 }
 
-// Data Dir
-$datadir_json = json_decode(file_get_contents(__DIR__ . '../../data/datadir.json'), 1);
-$datadir = $datadir_json['datadir'];
+$datadir = json_decode(file_get_contents(__DIR__ . '../../data/datadir.json'), 1)["datadir"];
 
 //easy settings variables
 $config_file = $datadir . '/config.json';
@@ -30,6 +33,27 @@ global $configJSON, $preferences, $settings, $services, $authentication;
 //authentication
 $monitorrAPI = $authentication['apikey'];
 session_start();
+
+
+
+
+// New version download information
+$branch = $preferences['updateBranch'];
+
+
+// location to download new version zip
+$remote_file_url = 'https://github.com/Monitorr/Monitorr/zipball/' . $branch . '';
+// rename version location/name
+$local_file = '../../tmp/monitorr-' . $branch . '.zip'; #example: version/new-version.zip
+//
+// version check information
+//
+// url to external verification of version number as a .TXT file
+$ext_version_loc = 'https://raw.githubusercontent.com/Monitorr/Monitorr/' . $branch . '/assets/js/version/version.txt';
+// users local version number
+// added the 'uid' just to show that you can verify from an external server the
+// users information. But it can be replaced with something more simple
+$vnum_loc = "../js/version/version.txt"; #example: version/vnum_1.txt
 
 function checkAuthorization(){
     return ((!empty($_SESSION['user_name']) && ($_SESSION['user_is_logged_in'])) || (isset($_GET['apikey']) && ($_GET['apikey'] == $GLOBALS['monitorrAPI'])));
@@ -410,26 +434,6 @@ function getTotalUptime(){
 //</editor-fold>
 
 
-
-// New version download information
-$branch = $preferences['updateBranch'];
-
-
-// location to download new version zip
-$remote_file_url = 'https://github.com/Monitorr/Monitorr/zipball/' . $branch . '';
-// rename version location/name
-$local_file = '../../tmp/monitorr-' . $branch . '.zip'; #example: version/new-version.zip
-//
-// version check information
-//
-// url to external verification of version number as a .TXT file
-$ext_version_loc = 'https://raw.githubusercontent.com/Monitorr/Monitorr/' . $branch . '/assets/js/version/version.txt';
-// users local version number
-// added the 'uid' just to show that you can verify from an external server the
-// users information. But it can be replaced with something more simple
-$vnum_loc = "../js/version/version.txt"; #example: version/vnum_1.txt
-
-
 function configExists()
 {
 	return is_file($GLOBALS['config_file']);
@@ -501,3 +505,40 @@ function sortServicesByName($service1, $service2) {
 	return strcmp(strtolower($service1["serviceTitle"]), strtolower($service2["serviceTitle"]));
 }
 //</editor-fold>
+
+
+
+function updateConfig($datadir) {
+	//TODO: Maybe some smart version checking, for future config changes
+	$old_preferences = json_decode(file_get_contents($datadir . 'user_preferences-data.json'), 1);
+	$old_settings = json_decode(file_get_contents($datadir . 'site_settings-data.json'), 1);
+	$old_services = json_decode(file_get_contents($datadir . 'services_settings-data.json'), 1);
+
+	$new_config = json_decode(file_get_contents(__DIR__ . "/../data/default.json"), 1);
+	$new_preferences = $new_config["preferences"];
+	$new_settings = $new_config["settings"];
+	$new_services = $new_config["services"];
+	$new_authentication = $new_config["authentication"];
+
+	//Preferences
+	$new_authentication["registrationEnabled"] = ($old_preferences["registration"] != "Disabled") ? "True" : "False";
+	foreach ($new_preferences as $key => $value) {
+		if(isset($old_preferences[$key])) {
+			$new_preferences[$key] = $old_preferences[$key];
+		}
+	}
+
+	//Settings
+	foreach ($new_settings as $key => $value) {
+		if(isset($old_settings[$key])) {
+			$new_settings[$key] = $old_settings[$key];
+		}
+	}
+
+	//Services
+	foreach ($old_services as $service) {
+		unset($service["type"]);
+		$new_services[] = $service;
+	}
+
+}

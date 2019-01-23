@@ -99,14 +99,6 @@ include('../auth_check.php');
                                 "image": "#image_option"
                             }
                         },
-                        "//type": {
-                            "templates": {
-                                "control": "./templates/templates-services_type.html"
-                            },
-                            "bindings": {
-                                "link": "#type_option"
-                            }
-                        },
                         "//link": {
                             "templates": {
                                 "control": "./templates/templates-services_link.html"
@@ -161,7 +153,7 @@ include('../auth_check.php');
                             }
                         }, {
                             "label": "Images",
-                            "action": "",
+                            "action": "images",
                             "iconClass": "fa fa-image",
                             "click": function() {
                                 var modal = document.getElementById('myModal3');
@@ -180,11 +172,11 @@ include('../auth_check.php');
                             }
                         }, {
                             "label": "Sort alphabetically",
-                            "action": "",
+                            "action": "sort",
                             "iconClass": "fas fa-sort-alpha-down",
-                            "click": function () {
+                            "click": function (key) {
                                 sortServicesAlphabetically();
-                                setTimeout(location.reload.bind(location), 500)
+                                setTimeout(location.reload.bind(location), 500);
                             }
                         }]
                     },
@@ -276,35 +268,6 @@ include('../auth_check.php');
                                         if (value) {
                                             $("#"+ this.id + "-image").attr("src", "../" + value);
                                         }
-                                        $('.alpaca-form-button-submit').addClass('buttonchange');
-                                    }
-                                }
-                            },
-                            "type": {
-                                "type": "select",
-                                "validate": true,
-                                "optionLabels": [" Standard", " Ping Only"],
-                                "showMessages": true,
-                                "disabled": false,
-                                "hidden": false,
-                                "label": "Check Type:",
-                                "hideInitValidationError": false,
-                                "focus": false,
-                                "name": "checktype",
-                                "typeahead": {},
-                                "styled": true,
-                                "allowOptionalEmpty": false,
-                                "hideNone": true,
-                                "data": {},
-                                "autocomplete": false,
-                                "disallowEmptySpaces": true,
-                                "disallowOnlyEmptySpaces": false,
-                                "removeDefaultNone": true,
-                                "fields": {},
-                                "renderButtons": true,
-                                "attributes": {},
-                                "events": {
-                                    "change": function() {
                                         $('.alpaca-form-button-submit').addClass('buttonchange');
                                     }
                                 }

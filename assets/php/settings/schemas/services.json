@@ -9,47 +9,11 @@
 				"maxLength": 20,
 				"default": "Service Title"
 			},
-			"enabled": {
-				"type": "string",
-				"title": "enabled",
-				"enum": [
-					"Yes",
-					"No"
-				],
-				"required": true,
-				"pattern": {},
-				"default": "Yes",
-				"properties": {}
-			},
 			"image": {
 				"type": "string",
 				"title": "Service Image",
 				"format": "uri",
 				"default": "../img/monitorr.png"
-			},
-			"type": {
-				"type": "string",
-				"title": "Check Type:",
-				"enum": [
-					"Standard",
-					"Ping Only"
-				],
-				"required": true,
-				"pattern": {},
-				"default": " Standard",
-				"properties": {}
-			},
-			"link": {
-				"type": "string",
-				"title": "link",
-				"enum": [
-					"Yes",
-					"No"
-				],
-				"required": true,
-				"pattern": {},
-				"default": "Yes",
-				"properties": {}
 			},
 			"checkurl": {
 				"required": true,
@@ -64,6 +28,30 @@
 				"title": "Link URL",
 				"format": "uri",
 				"default": "http://localhost:80"
+			},
+			"enabled": {
+				"type": "string",
+				"title": "enabled",
+				"enum": [
+					"Yes",
+					"No"
+				],
+				"required": true,
+				"pattern": {},
+				"default": "Yes",
+				"properties": {}
+			},
+			"link": {
+				"type": "string",
+				"title": "link",
+				"enum": [
+					"Yes",
+					"No"
+				],
+				"required": true,
+				"pattern": {},
+				"default": "Yes",
+				"properties": {}
 			}
 		},
 		"dependencies": {

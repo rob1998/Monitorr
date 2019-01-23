@@ -1807,17 +1807,7 @@ ul.nav.sidebar-nav > li > a > i {
     text-decoration: none;
 }
 
-#title_input {
-    position: relative;
-    margin-bottom: 2rem;
-}
 
-#enabled_option {
-    position: relative;
-    margin-top: -8rem;
-    margin-left: 16.5rem;
-    z-index: 1000;
-}
 
 .enabledwarning {
     margin-left: 1rem;
@@ -1831,9 +1821,47 @@ ul.nav.sidebar-nav > li > a > i {
     display: none;
     visibility: hidden;
 }
-
-#type_option {
+#servicesettings > form > div > div > div > div > div.alpaca-field > div.alpaca-container {
+    column-count: 2;
+    column-gap: 1em;
+}
+#servicesettings > form > div > div > div > div > div.alpaca-field > div.alpaca-container > * {
+    width: 100%;
     position: relative;
+    padding: 10px;
+    display: inline-block;
+}
+.alpaca-container-item[data-alpaca-container-item-name="enabled"], .alpaca-container-item[data-alpaca-container-item-name="link"] {
+     width: 50% !important;
+     float: left;
+ }
+.alpaca-image-display > h5 {
+    display: none;
+}
+
+#image_option {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+#image_option > label {
+    flex: 1 100%;
+}
+
+.alpaca-array-actionbar.alpaca-array-actionbar-top.btn-group {
+    width: auto;
+}
+
+#servicesettings input[type="text"] {
+    width: 100%;
+}
+
+.alpaca-image-display img {
+    width: 7rem;
+    height: 7rem;
+    -webkit-filter: drop-shadow(3px 3px 3px black);
+    filter: drop-shadow(3px 3px 3px black);
 }
 
 #ping_option {
@@ -1843,12 +1871,6 @@ ul.nav.sidebar-nav > li > a > i {
     z-index: 1000;
 }
 
-#link_option {
-    position: relative;
-    margin-top: -6.5rem;
-    margin-left: 19.5rem;
-    z-index: 1000;
-}
 
 /* Service Image Modal */
 
@@ -1878,8 +1900,8 @@ ul.nav.sidebar-nav > li > a > i {
     position: fixed;
     top: 0;
     overflow-y: auto;
-    height: 70%;
-    margin-top: 10%;
+    height: 80%;
+    margin-top: 5%;
     margin-left: 10%;
     margin-right: 10%;
     padding: 1rem;
@@ -2093,33 +2115,6 @@ uploadbtn:hover {
     font-weight: 700;
 }
 
-#checkurl {
-    float: right;
-    margin-top: -12rem;
-    width: 20rem;
-    text-align: center;
-}
-
-#linkurl {
-    float: right;
-    position: relative;
-    margin-top: -5.5rem;
-    width: 20rem;
-    text-align: center;
-    z-index: 1000;
-}
-
-#checknote {
-    position: sticky;
-    width: inherit;
-    margin-top: 4rem;
-    color: grey;
-    font-size: .85rem;
-    font-style: italic;
-    cursor: default;
-    z-index: 1;
-}
-
 .btn {
     color: white;
     background-color: #007bff;
@@ -2184,28 +2179,6 @@ form > .alpaca-field > .alpaca-container > .alpaca-container-item > div {
 .alpaca-array-actionbar,
 .alpaca-array-actionbar.btn-group {
     margin-top: 1rem;
-}
-
-.alpaca-field.alpaca-field-object {
-    position: relative;
-}
-
-.alpaca-image-display > h5 {
-    display: none;
-}
-
-.alpaca-image-display {
-    position: absolute;
-    top: -3rem;
-    margin-top: 0 !important;
-    right: 55px;
-}
-
-.alpaca-image-display img {
-    width: 7rem;
-    height: 7rem;
-    -webkit-filter: drop-shadow(3px 3px 3px black);
-    filter: drop-shadow(3px 3px 3px black);
 }
 
 .btn-group > .btn:first-child {
@@ -2977,9 +2950,6 @@ object {
     width: 10rem;
 }
 
-#image_option {
-    margin-top: 3rem;
-}
 
 .help-block {
     color: grey;

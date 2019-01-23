@@ -114,7 +114,7 @@ https://github.com/Monitorr/Monitorr
                     <span class="slider round"></span>
                 </label>
             </div>
-
+            <?php if($authenticator->getUserLoginStatus()){?>
             <div id="edit-mode-toggle" class="toggle" title="Toggle edit mode">
                 <span>Edit mode:</span>
                 <label class="switch" id="buttonStart">
@@ -123,6 +123,7 @@ https://github.com/Monitorr/Monitorr
                 </label>
                 <button id="save-order-btn" class="btn hidden">Save</button>
             </div>
+            <?php }?>
         </div>
 
     </div>

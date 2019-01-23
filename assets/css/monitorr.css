@@ -1929,37 +1929,30 @@ ul.nav.sidebar-nav > li > a > i {
     align-items: center;
 }
 
-#imgthumb {
+.imgthumb {
     display: inline-grid;
     padding: 1rem;
-}
-
-#imgbtn {
-    height: 7rem;
-    background-color: transparent;
-    border: none;
     cursor: pointer;
+    text-align: center;
+    width:10rem;
 }
 
-#imgpath {
+.imgthumb > img {
+    margin: auto;
+    width:7rem;
+}
+
+.imgthumb > input[type="text"],
+.imgthumb > input[type="text"]:hover,
+.imgthumb > input[type="text"]:focus{
     display: inline-grid;
     margin-top: .5rem;
     color: white;
-    text-align: center;
-}
-
-input[name="imginput"] {
-    color: white !important;
     background-color: transparent !important;
-    border: none !important;
+    border: none;
     padding-left: .2rem;
+    cursor: pointer;
     text-align: center;
-    cursor: text;
-}
-
-input[name="imginput"]:focus {
-    color: white !important;
-    background-color: transparent !important;
 }
 
 .modaltext {
@@ -2153,6 +2146,20 @@ uploadbtn:hover {
     -webkit-filter: drop-shadow(3px 3px 3px #222);
     filter: drop-shadow(3px 3px 3px #222);
     z-index: 2000;
+    position: fixed;
+    bottom: 0;
+}
+
+.alpaca-field-object {
+    border: none;
+    padding: 0;
+}
+
+
+form > .alpaca-field > .alpaca-container > .alpaca-container-item > div {
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 10px;
 }
 
 .alpaca-form-button-submit {
@@ -2177,6 +2184,28 @@ uploadbtn:hover {
 .alpaca-array-actionbar,
 .alpaca-array-actionbar.btn-group {
     margin-top: 1rem;
+}
+
+.alpaca-field.alpaca-field-object {
+    position: relative;
+}
+
+.alpaca-image-display > h5 {
+    display: none;
+}
+
+.alpaca-image-display {
+    position: absolute;
+    top: -3rem;
+    margin-top: 0 !important;
+    right: 55px;
+}
+
+.alpaca-image-display img {
+    width: 7rem;
+    height: 7rem;
+    -webkit-filter: drop-shadow(3px 3px 3px black);
+    filter: drop-shadow(3px 3px 3px black);
 }
 
 .btn-group > .btn:first-child {
@@ -2941,6 +2970,7 @@ object {
 .alpaca-control-label {
     font-size: 1.1rem;
     font-weight: 600;
+    max-width: 100%;
 }
 
 .radio {
@@ -2949,14 +2979,6 @@ object {
 
 #image_option {
     margin-top: 3rem;
-}
-
-.alpaca-image-display {
-    float: right;
-    margin-top: -16rem !important;
-    padding-right: 7rem;
-    -webkit-filter: drop-shadow(3px 3px 3px black);
-    filter: drop-shadow(3px 3px 3px black);
 }
 
 .help-block {

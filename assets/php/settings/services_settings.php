@@ -9,6 +9,7 @@ include('../auth_check.php');
 
     <meta charset="utf-8">
     <link type="text/css" href="../../css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" integrity="sha256-ENFZrbVzylNbgnXx0n3I1g//2WeO47XxoPe0vkp3NC8=" crossorigin="anonymous"/>
     <link type="text/css" href="../../css/alpaca.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
     <!-- <link type="text/css" href="../main.css" rel="stylesheet"> -->
@@ -23,6 +24,7 @@ include('../auth_check.php');
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://code.cloudcms.com/alpaca/1.5.24/bootstrap/alpaca.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.9/ace.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha256-3blsJd4Hli/7wCQ+bmgXfOdK7p/ZUMtPXY08jmxSSgk=" crossorigin="anonymous"></script>
     <script src="../../js/monitorr.main.js"></script>
 
     <title>
@@ -62,7 +64,6 @@ include('../auth_check.php');
 </div>
 
 <div id="serviceform">
-    <button onclick="sortServicesAlphabetically()">Sort alphabetically</button>
     <div id="servicesettings"></div>
 
     <script type="text/javascript">
@@ -177,6 +178,14 @@ include('../auth_check.php');
                                     }
                                 }
                             }
+                        }, {
+                            "label": "Sort alphabetically",
+                            "action": "",
+                            "iconClass": "fas fa-sort-alpha-down",
+                            "click": function () {
+                                sortServicesAlphabetically();
+                                setTimeout(location.reload.bind(location), 500)
+                            }
                         }]
                     },
                     "items": {
@@ -258,31 +267,17 @@ include('../auth_check.php');
                                 "fields": {},
                                 "renderButtons": true,
                                 "attributes": {},
-                                "onFieldChange": function(e) {
-
-                                    // Window/modal will appear with image when user inputs path into "service Image" text field and clicks out of field:"
-                                    var value = this.getValue();
-                                    if (value) {
-                                        var img = $("<img src='../" + value + "' style='width:7rem' alt=' image not found'>");
-                                        $("#mymodal2").html(img);
-                                    }
-
-                                    var modal = document.getElementById('myModal');
-                                    var span = document.getElementsByClassName("modal")[0];
-                                    modal.style.display = "block";
-
-                                    span.onclick = function() {
-                                        modal.style.display = "none";
-                                        $('#mymodal2').empty();
-                                    };
-
-                                    window.onclick = function(event) {
-                                        if (event.target == modal) {
-                                            modal.style.display = "none";
-                                            $('#mymodal2').empty();
+                                "events": {
+                                    "ready": function() {
+                                        $("#"+ this.id + "-image").attr("src", "../" + this.data);
+                                    },
+                                    "change": function() {
+                                        var value = this.getValue();
+                                        if (value) {
+                                            $("#"+ this.id + "-image").attr("src", "../" + value);
                                         }
-                                    };
-                                    $('.alpaca-form-button-submit').addClass('buttonchange');
+                                        $('.alpaca-form-button-submit').addClass('buttonchange');
+                                    }
                                 }
                             },
                             "type": {
@@ -455,16 +450,7 @@ include('../auth_check.php');
                 },
             });
         });
-    </script>           <!-- Modal pop-up for "Service Image" input field: -->
-
-    <div id="myModal" class="modal">
-
-        <p class="modaltext">Service Image Preview:</p>
-        <!-- Modal content -->
-        <div id="mymodal2" class="modal-content"></div>
-        <span class="close"  aria-hidden="true" title="close preview">&times;</span>
-
-    </div>
+    </script>
 
     <!-- Modal pop-up for images directory display: -->
 
@@ -498,49 +484,29 @@ include('../auth_check.php');
 
 			<?php
 
-			$imgpath = '../img/';
-			$usrimgpath = '../data/usrimg/';
+			$imgpath = __DIR__ . "/../../img/";
+			$usrimgpath = __DIR__ . "/../../data/usrimg";
 			$images = glob($imgpath.'*.*');
 			$images2 = glob($usrimgpath.'*.*');
 
 			$count = 0;
 
-			foreach ($images2 as $image) {
-
-				echo '<div id="imgthumb" class="imgthumb">';
-
-				echo '<button id="imgbtn" onclick="copyFunction(' . $count . ')">';
-				echo '<center>';
-				echo '<img src="'.$image.'" style="width:7rem" title="Double-click to copy"/>';
-				echo '</center>';
-				echo '</button>';
-
-				echo '<div id="imgpath">';
-				echo '<input type="text" value="'.$image.'"  id="'.$count.'" name="imginput" readonly>';
-
+			foreach ($images as $image) {
+			    $img_parts = explode("/", $image);
+                $img_name = end($img_parts);
+				echo '<div class="imgthumb">';
+                    echo '<img src="../../img/'.$img_name.'" title="Click to copy"/>';
+                    echo '<input type="text" value="../img/'.$img_name.'"\>';
 				echo '</div>';
-				echo '</div>';
-
-				++$count;
 			}
 
-			foreach ($images as $image) {
-
-				echo '<div id="imgthumb" class="imgthumb">';
-
-				echo '<button id="imgbtn" onclick="copyFunction(' . $count . ')">';
-				echo '<center>';
-				echo '<img src="'.$image.'" style="width:7rem" title="Double-click to copy"/>';
-				echo '</center>';
-				echo '</button>';
-
-				echo '<div id="imgpath">';
-				echo '<input type="text" value="'.$image.'"  id="'.$count.'" name="imginput" readonly>';
-
+			foreach ($images2 as $image) {
+				$img_parts = explode("/", $image);
+				$img_name = end($img_parts);
+				echo '<div class="imgthumb">';
+                    echo '<img src="../../data/userimg/'.$img_name.'" title="Click to copy"/>';
+                    echo '<input type="text" value="../data/userimg/'.$img_name.'">';
 				echo '</div>';
-				echo '</div>';
-
-				++$count;
 			}
 			?>
 
@@ -551,17 +517,15 @@ include('../auth_check.php');
     <!-- Click-to-copy function -->
 
     <script>
-        function copyFunction() {
-            var thumbs = document.querySelectorAll('.imgthumb');
-            thumbs.forEach( function ( thumb ) {
-                var button = thumb.querySelector('button');
-                var input = thumb.querySelector('input');
-                button.addEventListener('click', function () {
-                    input.select();
-                    document.execCommand("Copy");
-                })
-            })
-        }
+        $(function () {
+           $(".imgthumb").click(function () {
+               let $input = $(this).find("input");
+               $input.select();
+               document.execCommand("Copy");
+               notify("Copied to clipboard", $input.val() + " was copied to your clipboard");
+               $input.blur();
+           });
+        });
     </script>
 
     <!-- scroll to top   -->

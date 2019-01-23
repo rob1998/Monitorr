@@ -10,8 +10,7 @@ include('../auth_check.php');
     <meta charset="utf-8">
     <link type="text/css" href="../../css/bootstrap.min.css" rel="stylesheet">
     <link type="text/css" href="../../css/alpaca.min.css" rel="stylesheet">
-    <!-- <link type="text/css" href="../../css/main.css" rel="stylesheet"> -->
-    <link type="text/css" href="../../css/logarr.css" rel="stylesheet">
+    <link type="text/css" href="../../css/monitorr.css" rel="stylesheet">
     <link type="text/css" href="../../data/custom.css" rel="stylesheet">
 
     <meta name="theme-color" content="#464646"/>
@@ -85,7 +84,7 @@ include('../auth_check.php');
                 "view": {
                     "parent": "bootstrap-edit-horizontal",
                     "layout": {
-                        "template": '../css/./two-column-layout-template.html',
+                        "template": './templates/two-column-layout-template.html',
                         "bindings": {
                             "rfsysinfo": "leftcolumn",
                             "rftime": "leftcolumn",
@@ -110,7 +109,7 @@ include('../auth_check.php');
                     "fields": {
                         "/rfsysinfo": {
                             "templates": {
-                                "control": "../css/forms/./templates-site-settings_rfsysinfo.html"
+                                "control": "./templates/templates-site-settings_rfsysinfo.html"
                             },
                             "bindings": {
                                 "rfsysinfo": "#rfsysinfo_input"
@@ -118,7 +117,7 @@ include('../auth_check.php');
                         },
                         "/rftime": {
                             "templates": {
-                                "control": "../css/forms/./templates-site-settings_rftime.html"
+                                "control": "./templates/templates-site-settings_rftime.html"
                             },
                             "bindings": {
                                 "rftime": "#rftime_input"
@@ -126,7 +125,7 @@ include('../auth_check.php');
                         },
                         "/pinghost": {
                             "templates": {
-                                "control": "../css/forms/./templates-site-settings_pinghost.html"
+                                "control": "./templates/templates-site-settings_pinghost.html"
                             },
                             "bindings": {
                                 "pinghost": "#pinghost_input"
@@ -134,7 +133,7 @@ include('../auth_check.php');
                         },
                         "/pingport": {
                             "templates": {
-                                "control": "../css/forms/./templates-site-settings_pingport.html"
+                                "control": "./templates/templates-site-settings_pingport.html"
                             },
                             "bindings": {
                                 "pingport": "#pingport_input"
@@ -142,7 +141,7 @@ include('../auth_check.php');
                         },
                         "/disk1enable": {
                             "templates": {
-                                "control": "../css/forms/./templates-site-settings_disk1enable.html"
+                                "control": "./templates/templates-site-settings_disk1enable.html"
                             },
                             "bindings": {
                                 "disk1enable": "#disk1enable_select"
@@ -150,7 +149,7 @@ include('../auth_check.php');
                         },
                         "/disk1": {
                             "templates": {
-                                "control": "../css/forms/./templates-site-settings_disk1.html"
+                                "control": "./templates/templates-site-settings_disk1.html"
                             },
                             "bindings": {
                                 "disk1": "#disk1_input"
@@ -158,7 +157,7 @@ include('../auth_check.php');
                         },
                         "/hdok": {
                             "templates": {
-                                "control": "../css/forms/./templates-site-settings_hdok.html"
+                                "control": "./templates/templates-site-settings_hdok.html"
                             },
                             "bindings": {
                                 "hdok": "#hdok_input"
@@ -166,7 +165,7 @@ include('../auth_check.php');
                         },
                         "/hdwarn": {
                             "templates": {
-                                "control": "../css/forms/./templates-site-settings_hdwarn.html"
+                                "control": "./templates/templates-site-settings_hdwarn.html"
                             },
                             "bindings": {
                                 "hdwarn": "#hdwarn_input"
@@ -174,7 +173,7 @@ include('../auth_check.php');
                         },
                         "/cpuok": {
                             "templates": {
-                                "control": "../css/forms/./templates-site-settings_cpuok.html"
+                                "control": "./templates/templates-site-settings_cpuok.html"
                             },
                             "bindings": {
                                 "cpuok": "#cpuok_input"
@@ -182,7 +181,7 @@ include('../auth_check.php');
                         },
                         "/cpuwarn": {
                             "templates": {
-                                "control": "../css/forms/./templates-site-settings_cpuwarn.html"
+                                "control": "./templates/templates-site-settings_cpuwarn.html"
                             },
                             "bindings": {
                                 "cpuwarn": "#cpuwarn_input"
@@ -190,7 +189,7 @@ include('../auth_check.php');
                         },
                         "/ramok": {
                             "templates": {
-                                "control": "../css/forms/./templates-site-settings_ramok.html"
+                                "control": "./templates/templates-site-settings_ramok.html"
                             },
                             "bindings": {
                                 "ramok": "#ramok_input"
@@ -198,7 +197,7 @@ include('../auth_check.php');
                         },
                         "/ramwarn": {
                             "templates": {
-                                "control": "../css/forms/./templates-site-settings_ramwarn.html"
+                                "control": "./templates/templates-site-settings_ramwarn.html"
                             },
                             "bindings": {
                                 "ramwarn": "#ramwarn_input"
@@ -206,7 +205,7 @@ include('../auth_check.php');
                         },
                         "/pingok": {
                             "templates": {
-                                "control": "../css/forms/./templates-site-settings_pingok.html"
+                                "control": "./templates/templates-site-settings_pingok.html"
                             },
                             "bindings": {
                                 "pingok": "#pingok_input"
@@ -214,7 +213,7 @@ include('../auth_check.php');
                         },
                         "/pingwarn": {
                             "templates": {
-                                "control": "../css/forms/./templates-site-settings_pingwarn.html"
+                                "control": "./templates/templates-site-settings_pingwarn.html"
                             },
                             "bindings": {
                                 "pingwarn": "#pingwarn_input"
@@ -767,7 +766,7 @@ include('../auth_check.php');
                                 click: function(){
                                     var data = $('#sitesettings').alpaca().getValue();
                                     $.post({
-                                        url: 'post_receiver-site_settings.php',
+                                        url: './post-settings/post_receiver-site_settings.php',
                                         data: $('#sitesettings').alpaca().getValue(),
                                         success: function(data) {
                                             console.log("POST: Settings saved!");
@@ -820,7 +819,7 @@ include('../auth_check.php');
             <tr>
                 <td>
                     <div id="hd" class="col-md-2 col-centered double-val-label">
-                        <span class="<?php echo $hdClass1; ?> barlabel"> HD: </span>
+                        <span> HD: </span>
                     </div>
                 </td>
                 <td id="hdbar1">
@@ -828,9 +827,9 @@ include('../auth_check.php');
 
                         <table id="hdbar2" class='colorbar'>
                             <tr style='width: 100%;'>
-                                <td title="HD usage OK: 0% - <?php echo $jsonsite['hdok']; ?>%" style='background-color: #5cb85c; width: <?php echo $jsonsite['hdok']; ?>%;'> </td>
-                                <td title="HD usage warn: <?php echo $jsonsite['hdok']; ?>% - <?php echo $jsonsite['hdwarn']; ?>%" style='background-color: #f0ad4e; width:<?php echo(100 - $jsonsite['hdok'] - (100 - $jsonsite['hdwarn'])); ?>%;'> </td>
-                                <td title="HD usage not OK: <?php echo $jsonsite['hdwarn']; ?>% - 100%" style='background-color: #d9534f; width:<?php echo(100 - $jsonsite['hdwarn']); ?>%;'></td>
+                                <td title="HD usage OK: 0% - <?php echo $GLOBALS["settings"]['hdok']; ?>%" style='background-color: #5cb85c; width: <?php echo $GLOBALS["settings"]['hdok']; ?>%;'> </td>
+                                <td title="HD usage warn: <?php echo $GLOBALS["settings"]['hdok']; ?>% - <?php echo $GLOBALS["settings"]['hdwarn']; ?>%" style='background-color: #f0ad4e; width:<?php echo(100 - $GLOBALS["settings"]['hdok'] - (100 - $GLOBALS["settings"]['hdwarn'])); ?>%;'> </td>
+                                <td title="HD usage not OK: <?php echo $GLOBALS["settings"]['hdwarn']; ?>% - 100%" style='background-color: #d9534f; width:<?php echo(100 - $GLOBALS["settings"]['hdwarn']); ?>%;'></td>
                             </tr>
                         </table>
 
@@ -840,7 +839,7 @@ include('../auth_check.php');
             <tr>
                 <td>
                     <div id="cpu" class="col-md-2 col-centered double-val-label">
-                        <span class="<?php echo $cpuClass; ?>">CPU: </span>
+                        <span>CPU: </span>
                     </div>
                 </td>
                 <td id="cpubar1">
@@ -848,9 +847,9 @@ include('../auth_check.php');
 
                         <table class='colorbar'>
                             <tr style='width: 100%;'>
-                                <td title="CPU utilization OK: 0% - <?php echo $jsonsite['cpuok']; ?>%" style='background-color: #5cb85c; width: <?php echo $jsonsite['cpuok']; ?>%;'> </td>
-                                <td title="CPU utilization warn: <?php echo $jsonsite['cpuok']; ?>% - <?php echo $jsonsite['cpuwarn']; ?>%" style='background-color: #f0ad4e; width:<?php echo(100 - $jsonsite['cpuok'] - (100 - $jsonsite['cpuwarn'])); ?>%;'> </td>
-                                <td title="CPU utilization not OK: <?php echo $jsonsite['cpuwarn']; ?>% - 100%" style='background-color: #d9534f; width:<?php echo(100 - $jsonsite['cpuwarn']); ?>%;'></td>
+                                <td title="CPU utilization OK: 0% - <?php echo $GLOBALS["settings"]['cpuok']; ?>%" style='background-color: #5cb85c; width: <?php echo $GLOBALS["settings"]['cpuok']; ?>%;'> </td>
+                                <td title="CPU utilization warn: <?php echo $GLOBALS["settings"]['cpuok']; ?>% - <?php echo $GLOBALS["settings"]['cpuwarn']; ?>%" style='background-color: #f0ad4e; width:<?php echo(100 - $GLOBALS["settings"]['cpuok'] - (100 - $GLOBALS["settings"]['cpuwarn'])); ?>%;'> </td>
+                                <td title="CPU utilization not OK: <?php echo $GLOBALS["settings"]['cpuwarn']; ?>% - 100%" style='background-color: #d9534f; width:<?php echo(100 - $GLOBALS["settings"]['cpuwarn']); ?>%;'></td>
                             </tr>
                         </table>
 
@@ -860,7 +859,7 @@ include('../auth_check.php');
             <tr>
                 <td>
                     <div id="ram" class="col-md-2 col-centered double-val-label">
-                        <span class="<?php echo $ramClass; ?>">RAM: </span>
+                        <span>RAM: </span>
                     </div>
                 </td>
                 <td id="rambar1">
@@ -868,9 +867,9 @@ include('../auth_check.php');
 
                         <table class='colorbar'>
                             <tr style='width: 100%;'>
-                                <td title="RAM utilization OK: 0% - <?php echo $jsonsite['ramok']; ?>%" style='background-color: #5cb85c; width: <?php echo $jsonsite['ramok']; ?>%;'> </td>
-                                <td title="RAM utilization warn: <?php echo $jsonsite['ramok']; ?>% - <?php echo $jsonsite['ramwarn']; ?>%" style='background-color: #f0ad4e; width:<?php echo(100 - $jsonsite['ramok'] - (100 - $jsonsite['ramwarn'])); ?>%;'> </td>
-                                <td title="RAM utilization not OK: <?php echo $jsonsite['ramwarn']; ?>% - 100%" style='background-color: #d9534f; width:<?php echo(100 - $jsonsite['ramwarn']); ?>%;'></td>
+                                <td title="RAM utilization OK: 0% - <?php echo $GLOBALS["settings"]['ramok']; ?>%" style='background-color: #5cb85c; width: <?php echo $GLOBALS["settings"]['ramok']; ?>%;'> </td>
+                                <td title="RAM utilization warn: <?php echo $GLOBALS["settings"]['ramok']; ?>% - <?php echo $GLOBALS["settings"]['ramwarn']; ?>%" style='background-color: #f0ad4e; width:<?php echo(100 - $GLOBALS["settings"]['ramok'] - (100 - $GLOBALS["settings"]['ramwarn'])); ?>%;'> </td>
+                                <td title="RAM utilization not OK: <?php echo $GLOBALS["settings"]['ramwarn']; ?>% - 100%" style='background-color: #d9534f; width:<?php echo(100 - $GLOBALS["settings"]['ramwarn']); ?>%;'></td>
                             </tr>
                         </table>
 

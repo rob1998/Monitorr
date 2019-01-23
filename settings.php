@@ -164,7 +164,7 @@ https://github.com/Monitorr/Monitorr
                     <a href="#registration" onclick="load_registration()"><i class="fas fa-user-plus"></i>Registration</a>
                 </li>
                 <li class="sidebar-nav-item" data-item="plugins">
-                    <a href="#plugins" onclick="load_plugins()"><i class="fas fa-user-plus"></i>Plugins</a>
+                    <a href="#plugins" onclick="load_plugins()"><i class="fas fa-puzzle-piece"></i>Plugins</a>
                 </li>
 				<?php if (isset($_SESSION['user_name']) && isset($_SESSION['user_is_logged_in']) && !empty($_SESSION['user_name']) && ($_SESSION['user_is_logged_in'])) { ?>
                     <li class="sidebar-nav-item" data-item="log-out">

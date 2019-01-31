@@ -49,14 +49,16 @@ if (!is_file($config_file)) {
 	echo "<br> <br>";
 
 	echo '<div id="loginmessage">';
-	echo "Copying default data files to user specified data dir:";
+	echo "Copying default config file to user specified data dir:";
 	echo "<br> <br>";
 	echo '<div>';
 
 	$default_config_file = __DIR__ . "/../../data/default.json";
+	$default_config = json_decode(file_get_contents($default_config_file), 1);
+	$default_config["authentication"]["apikey"] = implode('-', str_split(substr(strtolower(md5(microtime().rand(1000, 9999))), 0, 30), 6));
 	$new_config_file = $datadir . 'config.json';
 
-	if (!copy($default_config_file, $new_config_file)) {
+	if (!file_put_contents($new_config_file, json_encode($default_config, JSON_PRETTY_PRINT))) {
 		echo '<div class="reglog">';
 		echo '<div id="loginerror">';
 		echo "failed to copy $default_config_file...\n";

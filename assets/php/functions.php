@@ -31,9 +31,6 @@ global $configJSON, $preferences, $settings, $services, $authentication;
 $monitorrAPI = $authentication['apikey'];
 session_start();
 
-
-
-
 // New version download information
 $branch = $preferences['updateBranch'];
 
@@ -545,6 +542,8 @@ function updateConfig($datadir) {
 	$new_settings = $new_config["settings"];
 	$new_services = $new_config["services"];
 	$new_authentication = $new_config["authentication"];
+
+	$new_authentication["apikey"] = implode('-', str_split(substr(strtolower(md5(microtime().rand(1000, 9999))), 0, 30), 6));
 
 	//Preferences
 	$new_authentication["registrationEnabled"] = (isset($old_preferences["registration"]) && $old_preferences["registration"] != "Disabled") ? "True" : "False";

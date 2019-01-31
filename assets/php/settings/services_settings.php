@@ -413,7 +413,7 @@ include('../auth_check.php');
 			<?php
 
 			$imgpath = __DIR__ . "/../../img/";
-			$usrimgpath = __DIR__ . "/../../data/usrimg";
+			$usrimgpath = __DIR__ . "/../../data/usrimg/";
 			$images = glob($imgpath.'*.*');
 			$images2 = glob($usrimgpath.'*.*');
 
@@ -427,13 +427,13 @@ include('../auth_check.php');
                     echo '<input type="text" value="../img/'.$img_name.'"\>';
 				echo '</div>';
 			}
-
+            echo "<hr><h2 style='color: white;'>User Images</h2>";
 			foreach ($images2 as $image) {
 				$img_parts = explode("/", $image);
 				$img_name = end($img_parts);
 				echo '<div class="imgthumb">';
-                    echo '<img src="../../data/userimg/'.$img_name.'" title="Click to copy"/>';
-                    echo '<input type="text" value="../data/userimg/'.$img_name.'">';
+                    echo '<img src="../../data/usrimg/'.$img_name.'" title="Click to copy"/>';
+                    echo '<input type="text" value="../data/usrimg/'.$img_name.'">';
 				echo '</div>';
 			}
 			?>
@@ -441,6 +441,47 @@ include('../auth_check.php');
         </div>
 
     </div>
+
+    <!-- Upload functions -->
+    <script>
+        $(document).ready(function(){
+            $('#upload').on('click', function() {
+                var file_data = $('#choosefile').prop('files')[0];
+                var form_data = new FormData();
+                form_data.append('fileToUpload', file_data);
+                $.ajax({
+                    url: '../upload.php',
+                    dataType: 'text',  // Return output from image upload script.
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    data: form_data,
+                    type: 'post',
+                    success: function(php_script_response){
+                        console.log($('#choosefile'));
+                        console.log(php_script_response);
+                        $('#uploadreturn').html(php_script_response);
+                        $('#mymodal4').load(document.URL +  ' #mymodal4');
+                    },
+                    error: function(errorThrown){
+                        console.log(errorThrown);
+                        notify("POST Error", "Something went wrong when submitting data.");
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function(){
+            $('#choosefile').bind('change', function() {
+                var fileName = '';
+                fileName = $(this).val();
+                $('#file-selected').html(fileName.replace(/^.*\\/, ""));
+                $('#upload').removeClass('uploadbtn');
+            })
+        });
+    </script>
 
     <!-- Click-to-copy function -->
 

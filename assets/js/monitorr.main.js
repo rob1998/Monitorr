@@ -4,6 +4,7 @@ let nIntervId = [];
 let nIntervId2;
 let editMode = false;
 let current_rfsysinfo;
+let order = [];
 
 $(function () {
     //fade-in effect
@@ -128,9 +129,9 @@ $(function () {
     $("#auto-update-toggle :checkbox").change(function () {
         if ($(this).is(':checked')) {
             refreshConfig();
-            updateSummary();
             statusCheck();
-            nIntervId["refreshConfig"] = setInterval(updateSummary, settings.rfconfig);
+            console.log(settings.rfconfig);
+            nIntervId["refreshConfig"] = setInterval(refreshConfig, settings.rfconfig);
             nIntervId["updateSummary"] = setInterval(updateSummary, settings.rfsysinfo);
             nIntervId2 = setInterval(statusCheck, settings.rfsysinfo);
             notify("Auto refresh: Enabled | Interval: " + settings.rfsysinfo + " ms");
@@ -253,7 +254,7 @@ function checkServices() {
             html += "   <div id=\"pingindicator-" + $service.serviceTitle.replace(/ /g, "-") + "\" class='pingindicator' >";
             html += "       <div class=\"pingcircle\"></div>";
             html += "   </div>";
-            if ($service.link == "Yes") {
+            if ($service.link === "Yes") {
                 html += "   <div class=\"servicetile\" data-location=\"" + $service.linkurl + "\" style=\"display: block\">";
             } else {
                 html += "   <div class=\"servicetile nolink\" data-location=\"" + $service.linkurl + "\" style=\"display: block\">";
@@ -267,6 +268,7 @@ function checkServices() {
             html += "</div>";
 
             // INSERT AT CORRECT POSITION
+            let order = i;
             let n = order - 1;
             let $nextElement = $("#statusloop div[data-order='" + n + "']");
             while ($($nextElement).data("offline") === "true") {
@@ -529,26 +531,28 @@ function refreshConfig() {
 }
 
 function syncServerTime() {
-    /*console.log('Monitorr time update START | Interval: ' + settings.rftime + ' ms');
+    console.log('Monitorr time update START | Interval: ' + settings.rftime + ' ms');
     $.ajax({
-        url: "assets/php/time.php",
+        url: "api/?v1/getTime",
         type: "GET",
         success: function (response) {
-            var response = $.parseJSON(response);
-            serverTime = response.serverTime;
-            timeStandard = parseInt(response.timeStandard);
-            timeZone = response.timezoneSuffix;
-            rftime = response.rftime;
-            date = new Date(serverTime);
-            setTimeout(function () {
-                syncServerTime()
-            }, settings.rftime); //delay is rftime
+            let json = JSON.parse(response);
+            if (json.status === "success") {
+                let response = JSON.parse(json.data);
+                serverTime = response.serverTime;
+                timeStandard = parseInt(response.timeStandard);
+                timeZone = response.timezoneSuffix;
+                rftime = response.rftime;
+                date = new Date(serverTime);
+                setTimeout(function () {
+                    syncServerTime()
+                }, settings.rftime); //delay is rftime
+            }
         },
         error: function (jqXHR, textStatus, errorThrown) {
             console.log('Monitorr time update START');
         }
-    });*/
-    // TODO: create API call for this one
+    });
 }
 
 function parseGithubToHTML(result) {

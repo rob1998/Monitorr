@@ -88,6 +88,7 @@ include('../auth_check.php');
                         "bindings": {
                             "rfsysinfo": "leftcolumn",
                             "rftime": "leftcolumn",
+                            "rfconfig": "leftcolumn",
                             "pinghost": "leftcolumn",
                             "pingport": "leftcolumn",
                             "disk1enable": "tdcenterleft",
@@ -121,6 +122,14 @@ include('../auth_check.php');
                             },
                             "bindings": {
                                 "rftime": "#rftime_input"
+                            }
+                        },
+                        "/rfconfig": {
+                            "templates": {
+                                "control": "./templates/templates-site-settings_rfconfig.html"
+                            },
+                            "bindings": {
+                                "rftime": "#rfconfig_input"
                             }
                         },
                         "/pinghost": {
@@ -272,6 +281,35 @@ include('../auth_check.php');
                             "focus": false,
                             "optionLabels": [],
                             "name": "rftime",
+                            "placeholder": "180000",
+                            "typeahead": {},
+                            "size": "10",
+                            "allowOptionalEmpty": false,
+                            "data": {},
+                            "autocomplete": false,
+                            "disallowEmptySpaces": true,
+                            "disallowOnlyEmptySpaces": false,
+                            "fields": {},
+                            "renderButtons": true,
+                            "attributes": {},
+                            "events": {
+                                "change": function() {
+                                    $('.alpaca-form-button-submit').addClass('buttonchange');
+                                }
+                            }
+                        },
+                        "rfconfig": {
+                            "type": "number",
+                            "validate": true,
+                            "showMessages": true,
+                            "disabled": false,
+                            "hidden": false,
+                            "label": "Config sync interval:",
+                            "helper": "Specifies how frequently (in milliseconds) the UI will synchronize the config variables.",
+                            "hideInitValidationError": false,
+                            "focus": false,
+                            "optionLabels": [],
+                            "name": "rfconfig",
                             "placeholder": "180000",
                             "typeahead": {},
                             "size": "10",

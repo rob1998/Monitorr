@@ -4,20 +4,17 @@ if (!is_file(__DIR__ . '../../data/datadir.json')
 	|| file_get_contents(__DIR__ . '../../data/datadir.json') == ""
 	|| !key_exists("datadir", json_decode(file_get_contents(__DIR__ . '../../data/datadir.json'), 1))
 ) {
-	$datadir = json_decode(file_get_contents(__DIR__ . '../../data/datadir.json'), 1)["datadir"];
-	if(!is_file($datadir . 'config.json')
-		&& is_file($datadir . 'user_preferences-data.json')) {
-		//no new config found, but old config. Attempt upgrade
-		updateConfig($datadir);
-	} else {
-		//invalid/unset datadir, start configuration process
-		$_GET['action'] = 'config';
-		include_once(__DIR__ . '/auth_check.php');
-		exit();
-	}
+	//invalid/unset datadir, start configuration process
+	$_GET['action'] = 'config';
+	include_once(__DIR__ . '/auth_check.php');
+	exit();
 }
-
 $datadir = json_decode(file_get_contents(__DIR__ . '../../data/datadir.json'), 1)["datadir"];
+if(!is_file($datadir . 'config.json')
+	&& is_file($datadir . 'user_preferences-data.json')) {
+	//no new config found, but old config. Attempt upgrade
+	updateConfig($datadir);
+}
 
 //easy settings variables
 $config_file = $datadir . '/config.json';
@@ -506,7 +503,36 @@ function sortServicesByName($service1, $service2) {
 }
 //</editor-fold>
 
+function getServerTime() {
+	$timezone = $GLOBALS['preferences']['timezone'];
+	$timestandard = (int) ($GLOBALS['preferences']['timestandard'] === "True" ? true:false);
+	date_default_timezone_set($timezone);
+	$dt = new DateTime("now", new DateTimeZone("$timezone"));
+	$rftime = $GLOBALS['settings']['rftime'];
 
+	// 12-hour time format:
+	if ($timestandard==='True'){
+		$dateTime = new DateTime();
+		$dateTime->setTimeZone(new DateTimeZone($timezone));
+		$timezone_suffix = '';
+		$serverTime = $dt->format("D d M Y g:i:s A");
+	}
+	// 24-hour time format:
+	else {
+		$dateTime = new DateTime();
+		$dateTime->setTimeZone(new DateTimeZone($timezone));
+		$timezone_suffix = $dateTime->format('T');
+		$serverTime = $dt->format("D d M Y H:i:s");
+	}
+
+	$response = array(
+		'serverTime' => $serverTime,
+		'timestandard' => $timestandard,
+		'timezoneSuffix' => $timezone_suffix,
+		'rftime' => $rftime
+	);
+	return json_encode($response);
+}
 
 function updateConfig($datadir) {
 	//TODO: Maybe some smart version checking, for future config changes
@@ -521,7 +547,7 @@ function updateConfig($datadir) {
 	$new_authentication = $new_config["authentication"];
 
 	//Preferences
-	$new_authentication["registrationEnabled"] = ($old_preferences["registration"] != "Disabled") ? "True" : "False";
+	$new_authentication["registrationEnabled"] = (isset($old_preferences["registration"]) && $old_preferences["registration"] != "Disabled") ? "True" : "False";
 	foreach ($new_preferences as $key => $value) {
 		if(isset($old_preferences[$key])) {
 			$new_preferences[$key] = $old_preferences[$key];
@@ -541,4 +567,9 @@ function updateConfig($datadir) {
 		$new_services[] = $service;
 	}
 
+	$new_config["preferences"] = $new_preferences;
+	$new_config["settings"] = $new_settings;
+	$new_config["services"] = $new_services;
+	$new_config["authentication"] = $new_authentication;
+	file_put_contents($datadir . 'config.json' , json_encode($new_config, JSON_PRETTY_PRINT));
 }

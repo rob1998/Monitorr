@@ -18,6 +18,14 @@
             "exclusiveMinimum": true,
             "properties": {}
         },
+        "rfconfig": {
+            "type": "string",
+            "required": true,
+            "default": "60000",
+            "minimum": 1000,
+            "exclusiveMinimum": true,
+            "properties": {}
+        },
         "pinghost": {
             "type": "string",
             "required": true,

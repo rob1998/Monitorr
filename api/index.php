@@ -69,6 +69,19 @@ switch ($function) {
 				break;
 		}
 		break;
+	case 'v1_getTime':
+		switch ($method) {
+			case 'GET':
+				$result['status'] = 'success';
+				$result['statusText'] = 'success';
+				$result['data'] = getServerTime();
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
 	case 'v1_getSystemBadges':
 		switch ($method) {
 			case 'GET':

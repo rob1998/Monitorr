@@ -1807,8 +1807,6 @@ ul.nav.sidebar-nav > li > a > i {
     text-decoration: none;
 }
 
-
-
 .enabledwarning {
     margin-left: 1rem;
     margin-bottom: -1rem;
@@ -1822,33 +1820,34 @@ ul.nav.sidebar-nav > li > a > i {
     visibility: hidden;
 }
 #servicesettings > form > div > div > div > div > div.alpaca-field > div.alpaca-container {
-    column-count: 2;
-    column-gap: 1em;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: start;
 }
 #servicesettings > form > div > div > div > div > div.alpaca-field > div.alpaca-container > * {
-    width: 100%;
     position: relative;
     padding: 10px;
-    display: inline-block;
 }
-.alpaca-container-item[data-alpaca-container-item-name="enabled"], .alpaca-container-item[data-alpaca-container-item-name="link"] {
-     width: 50% !important;
-     float: left;
- }
+#servicesettings .alpaca-container-item {
+    display: flex;
+    justify-content: center;
+}
 .alpaca-image-display > h5 {
     display: none;
 }
 
-#image_option {
+#enabled_option {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    align-items: start;
 }
 
-#image_option > label {
-    flex: 1 100%;
+#enabled_option-div {
+    padding-left: 25px;
 }
-
+.alpaca-required-indicator {
+    display: none;
+}
 .alpaca-array-actionbar.alpaca-array-actionbar-top.btn-group {
     width: auto;
 }
@@ -1857,9 +1856,17 @@ ul.nav.sidebar-nav > li > a > i {
     width: 100%;
 }
 
-.alpaca-image-display img {
-    width: 7rem;
-    height: 7rem;
+.alpaca-image-display {
+    display: none;
+}
+
+.alpaca-container-item:not(:first-child), .alpaca-control-buttons-container {
+    margin-top: 0;
+}
+
+.alpaca-image-preview {
+    width: 6rem;
+    height: 6rem;
     -webkit-filter: drop-shadow(3px 3px 3px black);
     filter: drop-shadow(3px 3px 3px black);
 }
@@ -2143,6 +2150,9 @@ uploadbtn:hover {
     z-index: 2000;
     position: fixed;
     bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
 }
 
 .alpaca-field-object {
@@ -2154,7 +2164,8 @@ uploadbtn:hover {
 form > .alpaca-field > .alpaca-container > .alpaca-container-item > div {
     border: 1px solid #eee;
     border-radius: 4px;
-    padding: 10px;
+    padding: 0 5rem;
+    margin-bottom: 0.6rem;
 }
 
 .alpaca-form-button-submit {

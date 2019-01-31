@@ -3,13 +3,27 @@
 	"items": {
 		"type": "object",
 		"properties": {
+			"enabled": {
+				"type": "string",
+				"title": "enabled",
+				"enum": [
+					"Yes",
+					"No"
+				],
+				"required": true,
+				"pattern": {},
+				"default": "Yes",
+				"properties": {}
+			},
 			"serviceTitle": {
+				"required": true,
 				"type": "string",
 				"title": "Service Title",
 				"maxLength": 20,
 				"default": "Service Title"
 			},
 			"image": {
+				"required": true,
 				"type": "string",
 				"title": "Service Image",
 				"format": "uri",
@@ -23,39 +37,11 @@
 				"default": "localhost:80"
 			},
 			"linkurl": {
-				"required": true,
 				"type": "url",
 				"title": "Link URL",
 				"format": "uri",
 				"default": "http://localhost:80"
-			},
-			"enabled": {
-				"type": "string",
-				"title": "enabled",
-				"enum": [
-					"Yes",
-					"No"
-				],
-				"required": true,
-				"pattern": {},
-				"default": "Yes",
-				"properties": {}
-			},
-			"link": {
-				"type": "string",
-				"title": "link",
-				"enum": [
-					"Yes",
-					"No"
-				],
-				"required": true,
-				"pattern": {},
-				"default": "Yes",
-				"properties": {}
 			}
-		},
-		"dependencies": {
-            "linkurl": ["link"]
-        }
+		}
 	}
 }

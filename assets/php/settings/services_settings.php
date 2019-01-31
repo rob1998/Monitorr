@@ -99,14 +99,6 @@ include('../auth_check.php');
                                 "image": "#image_option"
                             }
                         },
-                        "//link": {
-                            "templates": {
-                                "control": "./templates/templates-services_link.html"
-                            },
-                            "bindings": {
-                                "link": "#link_option"
-                            }
-                        },
                         "//checkurl": {
                             "templates": {
                                 "control": "./templates/templates-checkurl-control.html"
@@ -114,7 +106,7 @@ include('../auth_check.php');
                         },
                         "//linkurl": {
                             "templates": {
-                                "control": "./templates/templates-linkurl-control.html"
+                                "control": "./templates/templates-services_link.html"
                             }
                         }
                     }
@@ -261,38 +253,15 @@ include('../auth_check.php');
                                 "attributes": {},
                                 "events": {
                                     "ready": function() {
-                                        $("#"+ this.id + "-image").attr("src", "../" + this.data);
+                                        $image_preview_id = this.id.substr(6) - 2;
+                                        $("#image-preview-alpaca" + $image_preview_id).attr("src", "../" + this.data);
                                     },
                                     "change": function() {
                                         var value = this.getValue();
                                         if (value) {
-                                            $("#"+ this.id + "-image").attr("src", "../" + value);
+                                            $image_preview_id = this.id.substr(6) - 2;
+                                            $("#image-preview-alpaca" + $image_preview_id).attr("src", "../" + value);
                                         }
-                                        $('.alpaca-form-button-submit').addClass('buttonchange');
-                                    }
-                                }
-                            },
-                            "link": {
-                                "type": "select",
-                                "validate": false,
-                                "showMessages": true,
-                                "disabled": false,
-                                "hidden": false,
-                                "label": "Link Enabled:",
-                                //"helpers": ["Attaches 'Link URL' to service tile in the UI"],
-                                "hideInitValidationError": false,
-                                "focus": false,
-                                "name": "link",
-                                "typeahead": {},
-                                "allowOptionalEmpty": false,
-                                "data": {},
-                                "autocomplete": false,
-                                "disallowEmptySpaces": true,
-                                "disallowOnlyEmptySpaces": false,
-                                "removeDefaultNone": true,
-                                "fields": {},
-                                "events": {
-                                    "change": function() {
                                         $('.alpaca-form-button-submit').addClass('buttonchange');
                                     }
                                 }
@@ -307,7 +276,7 @@ include('../auth_check.php');
                                 "label": "Check URL:",
                                 "size": 30,
                                 //"helpers": ["URL to check status"],
-                                //"helper": "URL to check service status. (Port is required!)",
+                                //"helper": "URL to check service status. (Port is required?)",
                                 "hideInitValidationError": false,
                                 "focus": false,
                                 "name": "checkurl",
@@ -328,9 +297,6 @@ include('../auth_check.php');
                                 }
                             },
                             "linkurl": {
-                                "dependencies": {
-                                    "link": ["Yes"]
-                                },
                                 "type": "url",
                                 "validate": false,
                                 "allowIntranet": true,
@@ -343,7 +309,6 @@ include('../auth_check.php');
                                 //"helper": "URL that will be linked to service from the UI. ('Link URL' field value is not applied if using 'ping only' option)",
                                 "hideInitValidationError": false,
                                 "focus": false,
-                                "optionLabels": [],
                                 "name": "linkurl",
                                 "placeholder": "http://localhost:80",
                                 "typeahead": {},

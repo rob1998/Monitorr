@@ -5,8 +5,11 @@ let nIntervId2;
 let editMode = false;
 let current_rfsysinfo;
 let order = [];
+let offlineServices = [];
+let offlineService = 0;
 
 $(function () {
+    nIntervId["cycleSummary"] = setInterval(cycleSummary, 2000);
     //fade-in effect
     $('body').removeClass('fade-out');
 
@@ -178,12 +181,16 @@ function updateSummary() {
         dataType: "json",
         success: function (response) {
             if (response.status === "success") {
-                let $result = response.data;
-                if ($result.length === 0) {
+                offlineServices = response.data;
+                offlineService++;
+                if(offlineService > offlineServices.length) {
+                    offlineService = 0;
+                }
+                if (offlineServices.length === 0) {
                     $("#summary").hide();
                 } else {
                     $("#summary").fadeOut(function () {
-                        $(this).html($result[0]).fadeIn();
+                        $(this).html(offlineServices[offlineService]).fadeIn();
                     });
                 }
             } else {
@@ -199,6 +206,23 @@ function updateSummary() {
             }
         }
     });
+}
+
+function cycleSummary(){
+    console.log("Summary Cycle || Interval: 1500ms");
+    console.log(offlineServices);
+    offlineService++;
+    console.log(offlineService);
+    if(offlineService >= offlineServices.length) {
+        offlineService = 0;
+    }
+    if (offlineServices.length === 0) {
+        $("#summary").hide();
+    } else {
+        $("#summary").fadeOut(function () {
+            $(this).html(offlineServices[offlineService]).fadeIn();
+        });
+    }
 }
 
 function createPluginList(element) {
@@ -254,10 +278,10 @@ function checkServices() {
             html += "   <div id=\"pingindicator-" + $service.serviceTitle.replace(/ /g, "-") + "\" class='pingindicator' >";
             html += "       <div class=\"pingcircle\"></div>";
             html += "   </div>";
-            if ($service.link === "Yes") {
-                html += "   <div class=\"servicetile\" data-location=\"" + $service.linkurl + "\" style=\"display: block\">";
-            } else {
+            if ($service.linkurl) {
                 html += "   <div class=\"servicetile nolink\" data-location=\"" + $service.linkurl + "\" style=\"display: block\">";
+            } else {
+                html += "   <div class=\"servicetile\" data-location=\"" + $service.linkurl + "\" style=\"display: block\">";
             }
             html += "       <img id=\"" + $service.serviceTitle.replace(/ /g, "-") + "-service-img\" src=\"assets/img/" + $service.image + "\" class=\"serviceimg\" alt='" + $service.serviceTitle + "'>";
             html += "       <div class=\"servicetitle\">";

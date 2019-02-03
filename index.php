@@ -200,7 +200,7 @@ https://github.com/Monitorr/Monitorr
                             <div class="pingcircle"></div>
                         </div>
 
-                        <div class="servicetile <?php if ($service['link'] == "No") echo "nolink"; ?>" data-location="<?php echo $service['linkurl']; ?>" style="display: block">
+                        <div class="servicetile <?php if (!isset($service['linkurl'])) echo "nolink"; ?>" data-location="<?php echo $service['linkurl']; ?>" style="display: block">
 
                             <img id="<?php echo str_replace(" ", "-", $service['serviceTitle']); ?>-service-img" src="assets/img/<?php echo $service['image']; ?>" class="serviceimg" alt='<?php echo str_replace(" ", "-", $service['serviceTitle']); ?>'>
                             <div class="servicetitle">
